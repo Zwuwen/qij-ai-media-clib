@@ -55,6 +55,18 @@ class MediaFunc:
         return MediaFunc.media_lib.reset_media_conf_by_id(MediaFunc.handle, c_char_p(conf))
 
     @staticmethod
+    def add_media_by_handle(conf):
+        MediaFunc.media_lib.add_media_by_handle.argtypes = [c_void_p, c_char_p]
+        MediaFunc.media_lib.add_media_by_handle.restype = c_int
+        return MediaFunc.media_lib.add_media_by_handle(MediaFunc.handle, c_char_p(conf))
+
+    @staticmethod
+    def remove_media_by_handle(conf):
+        MediaFunc.media_lib.remove_media_by_handle.argtypes = [c_void_p, c_char_p]
+        MediaFunc.media_lib.remove_media_by_handle.restype = c_int
+        return MediaFunc.media_lib.remove_media_by_handle(MediaFunc.handle, c_char_p(conf))
+
+    @staticmethod
     def start_all():
         MediaFunc.media_lib.start_all_media.restype = c_int
         MediaFunc.media_lib.start_all_media.argtypes = [c_void_p]
@@ -126,13 +138,21 @@ if __name__ == '__main__':
     conf_dic1["media"].append(media1)
     conf_dic1["media"].append(media1)
 
-    conf_dic2 = {"media": [], "log": {"isdelete": True, "isoutput": True, "logpath": "./log", "level": "INFO"}}
     media1 = {"id": "media1", "url": "rtsp://admin:Admin123@192.168.55.13/Streaming/Channels/101", "decode": "VPU",
               "decode_data": 2}
-    media2 = {"id": "media2", "url": "rtsp://admin:test0883@192.168.54.53:554/Streaming/Channels/101", "decode": "VPU",
-              "decode_data": 3}
+    # media2 = {"id": "media2", "url": "rtsp://admin:test0883@192.168.54.53:554/Streaming/Channels/101", "decode": "VPU",
+    #           "decode_data": 3}
+    conf_dic2 = {"media": [], "log": {"isdelete": True, "isoutput": True, "logpath": "./log", "level": "INFO"}}
     conf_dic2["media"].append(media1)
-    conf_dic2["media"].append(media2)
+    # conf_dic2["media"].append(media2)
+
+    media3 = {"id": "media3", "url": "rtsp://admin:Admin123@192.168.55.13/Streaming/Channels/101", "decode": "VPU",
+              "decode_data": 2}
+    # media4 = {"id": "media4", "url": "rtsp://admin:test0883@192.168.54.53:554/Streaming/Channels/101", "decode": "VPU",
+    #           "decode_data": 3}
+    conf_dic3 = {"media": [], "log": {"isdelete": True, "isoutput": True, "logpath": "./log", "level": "INFO"}}
+    # conf_dic3["media"].append(media1)
+    conf_dic3["media"].append(media3)
 
     # media_configure_str1 = json.dumps(conf_dic1)
     # MediaFunc.init(media_configure_str1.encode())
@@ -146,17 +166,32 @@ if __name__ == '__main__':
     count = 0
     first = True
     while True:
-        MediaFunc.get_media_by_id(b"media1")
-        time.sleep(1)
+        # MediaFunc.get_media_by_id(b"media1")
+        # time.sleep(1)
+        print(f"get midia")
+        MediaFunc.get_media_by_id(b"media1", 1)
+        # time.sleep(1)
+        print(f"add midia:{conf_dic3}")
+        media_configure_str = json.dumps(conf_dic3)
+        result = MediaFunc.add_media_by_handle(media_configure_str.encode())
+        print(f"add midia result:{result}")
+        # while True:
+        #     time.sleep(5)
+        #     print("sleep")
 
-        MediaFunc.get_media_by_id(b"media2", 1)
-        time.sleep(1)
+        if result == 0:
+            result = MediaFunc.start_sample_media(b"media3")
+            print(f'start media3:{result}')
 
-        MediaFunc.get_media_by_id(b"media2", 2)
         time.sleep(1)
-
-        MediaFunc.get_media_by_id(b"media2", 3)
-        time.sleep(1)
+        print(f"get midia3")
+        MediaFunc.get_media_by_id(b"media3", 2)
+        # time.sleep(1)
+        # MediaFunc.get_media_by_id(b"media2", 2)
+        # time.sleep(1)
+        #
+        # MediaFunc.get_media_by_id(b"media2", 3)
+        # time.sleep(1)
         #
         # count = count + 1
         # if count >= 10 and first == True:

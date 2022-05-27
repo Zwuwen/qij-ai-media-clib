@@ -1,5 +1,6 @@
 #include "common.h"
 #include "base_media.h"
+#include "algorithm"
 
 cbase_media::cbase_media()
 {
@@ -34,34 +35,50 @@ UINT32 cbase_media::init_resource(vector<media_conf_t>& media_conf_list)
 
  void cbase_media::reset_sample_resource(media_conf_t& media_conf)
  {
-    for(int i = 0 ; i < this->m_media_conf_list.size();++i)
-    {
-        if(m_media_conf_list[i].m_id != media_conf.m_id)
-            continue;
-        m_media_conf_list[i] = media_conf;
-        
-        for(auto it = this->m_pull_flow_param_list.begin() ; it != this->m_pull_flow_param_list.end(); ++it)
-        {
-            if(it->m_id != media_conf.m_id)
-                continue;
-            stop_pull_media_task(it->m_id);
-            start_pull_media_task(it->m_id);
-        }
-    }
+//    for(int i = 0 ; i < this->m_media_conf_list.size();++i)
+//    {
+//        if(m_media_conf_list[i].m_id != media_conf.m_id)
+//            continue;
+//        m_media_conf_list[i] = media_conf;
+//
+//        for(auto & it : this->m_pull_flow_param_list)
+//        {
+//            if(it.m_id != media_conf.m_id)
+//                continue;
+//            stop_pull_media_task(it.m_id);
+//            start_pull_media_task(it.m_id);
+//        }
+//    }
+//     for(int i = 0 ; i < this->m_media_conf_list.size();++i)
+    for (auto &conf:m_media_conf_list)
+     {
+         if(conf.m_id != media_conf.m_id) continue;
+
+         conf = media_conf;
+         for(auto & it : this->m_pull_flow_param_list)
+         {
+             if(it.m_id != media_conf.m_id) continue;
+             stop_pull_media_task(it.m_id);
+             start_pull_media_task(it.m_id);
+         }
+     }
  }
 
 void cbase_media::destory_resource()
 {
-    while(this->m_pull_flow_param_list.size() > 0)
-    {
-        this->m_pull_flow_param_list.pop_back();
-    }
-    vector<ffmpeg_pull_flow_param_t>().swap(this->m_pull_flow_param_list);
-    while(this->m_media_conf_list.size() > 0)
-    {
-        this->m_media_conf_list.pop_back();
-    }
-    vector<media_conf_t>().swap(this->m_media_conf_list);
+    m_pull_flow_param_list.clear() ;
+    m_media_conf_list.clear();
+
+//    while(!this->m_pull_flow_param_list.empty())
+//    {
+//        this->m_pull_flow_param_list.pop_back();
+//    }
+////    vector<ffmpeg_pull_flow_param_t>().swap(this->m_pull_flow_param_list);
+//    while(!this->m_media_conf_list.empty())
+//    {
+//        this->m_media_conf_list.pop_back();
+//    }
+//    vector<media_conf_t>().swap(this->m_media_conf_list);
     avformat_network_deinit();
 }
 
@@ -261,9 +278,9 @@ Begin:
     {
          //timeout
         //cmylog::mylog("INFO","timeout count %d\n",duration_cast<seconds>(steady_clock::now() - start_time).count());
-        if(duration_cast<seconds>(steady_clock::now() - start_time).count() > atoi(pconf->m_unlink_timeout.c_str()))
-        {
-            cmylog::mylog("WAR","av_read_frame() timeout,url=%s\n",pconf->m_url.c_str());
+        if (duration_cast<seconds>(steady_clock::now() - start_time).count() > atoi(pconf->m_unlink_timeout.c_str())) {
+            cmylog::mylog("WAR", "av_read_frame() timeout,url=%s\n", pconf->m_url.c_str());
+#pragma mark - 断网时没有释放vpu相关资源 begin 会重新init
             in_this->clean_pull_resource(pconf->m_id);
 	        start_time = steady_clock::now();
             goto Begin;
@@ -294,7 +311,7 @@ End:
     //解码器资源回收
     decode->deinit();
     delete decode;
-    decode = NULL;
+    decode = nullptr;
     //清除拉流资源
     in_this->clean_pull_resource(pconf->m_id);
 }
@@ -303,14 +320,15 @@ void cbase_media::stop_pull_media_task(std::string media_flow_id)
 {
     for(auto pull_it = this->m_pull_flow_param_list.begin() ; pull_it != this->m_pull_flow_param_list.end(); ++pull_it)
     {
-        if(pull_it->m_id != media_flow_id)
-                continue;
+        if(pull_it->m_id != media_flow_id) continue;
         if(pull_it->m_id == media_flow_id)
         {
-            pull_it->m_is_running = false;
-            pull_it->m_thread->join();
-            delete pull_it->m_thread;
-            pull_it->m_thread = nullptr;
+            if(pull_it->m_is_running){
+                pull_it->m_is_running = false;
+                pull_it->m_thread->join();
+                delete pull_it->m_thread;
+                pull_it->m_thread = nullptr;
+            }
         }
         break;
     }
@@ -320,10 +338,12 @@ void cbase_media::stop_all_pull_media_task()
 {
     for(auto pull_it = this->m_pull_flow_param_list.begin() ; pull_it != this->m_pull_flow_param_list.end(); ++pull_it)
     {
-        pull_it->m_is_running = false;
-        pull_it->m_thread->join();
-        delete pull_it->m_thread;
-        pull_it->m_thread = nullptr;
+       if(pull_it->m_is_running){
+           pull_it->m_is_running = false;
+           pull_it->m_thread->join();
+           delete pull_it->m_thread;
+           pull_it->m_thread = nullptr;
+       }
     }
 }
 
@@ -388,25 +408,90 @@ void cbase_media::clean(ffmpeg_pull_flow_param_t& pull_param)
     }
 }
 
-UINT32 cbase_media::get_media_by_id(char* media_id,int media_type,char* data,int size)
+UINT32 cbase_media::get_media_by_id(const char* media_id,int media_type,uint8_t * data,int size)
 {
     std::string id = media_id;
 
-    for(auto it = this->m_pull_flow_param_list.begin() ; it != this->m_pull_flow_param_list.end(); ++it)
+    for(auto & it : m_pull_flow_param_list)
      {
-         if(it->m_id == id)
+         if(it.m_id == id)
          {
              //查看线程是否启动
-            if(it->m_is_running == false)
+            if(!it.m_is_running)
             {
                 return 0;
             } 
-            if(it->m_decode != NULL)
+#pragma mark -新增
+             if(it.m_decode != nullptr)
             {
-                it->m_decode->set_cache_type(media_type);
-                return it->m_decode->get((UINT8*)data, (UINT32)size);
+                if(!it.m_decode->is_run()){
+                    return 0;
+                }
+                it.m_decode->set_cache_type(media_type);
+                return it.m_decode->get((UINT8*)data, (UINT32)size);
             }
          }
      }
      return 0;
+}
+#pragma mark - 以下为新增
+std::list<media_conf_t> &cbase_media::get_media_conf() {
+    return m_media_conf_list;
+}
+/**
+ * 添加资源
+ * @param media_conf_list
+ * @return
+ */
+int cbase_media::add_resource(vector<media_conf_t> &media_conf_list) {
+    if (media_conf_list.empty()) {
+        cmylog::mylog("WAR", "media configure list size <=0\n");
+        return QJ_BOX_OP_CODE_INPUTPARAMERR;
+    }
+    //资源列表初始化
+    for (auto &it: media_conf_list) {
+        //流配置初始化
+        cmylog::mylog("INFO", "media configure id=%s\n", it.m_id.c_str());
+        this->m_media_conf_list.push_back(it);
+        ffmpeg_pull_flow_param_t ffmpeg_pull_obj;
+        ffmpeg_pull_obj.m_id = it.m_id;
+        this->m_pull_flow_param_list.push_back(ffmpeg_pull_obj);
+    }
+    cmylog::mylog("INFO", "base media add complete\n");
+    return QJ_BOX_OP_CODE_SUCESS;
+}
+/**
+ * 删除资源
+ * @param media_confs
+ * @return
+ */
+int cbase_media::remove_resource(vector<media_conf_t>& media_confs) {
+
+    for(const auto& conf:media_confs){
+       string media_fow_id = conf.m_id;
+        /*①停止拉流解码线程，回收相应资源*/
+        stop_pull_media_task(media_fow_id);
+
+        /*②清除拉流/解码句柄*/
+        m_pull_flow_param_list.erase(
+                std::remove_if(
+                        begin(m_pull_flow_param_list), end(m_pull_flow_param_list),
+                        [&media_fow_id](const ffmpeg_pull_flow_param_t& m) {
+                            return m.m_id == media_fow_id;
+                        }
+                ), m_pull_flow_param_list.end()
+        );
+
+        /*③清除资源句柄*/
+        m_media_conf_list.erase(
+                std::remove_if(
+                        begin(m_media_conf_list), end(m_media_conf_list),
+                        [&media_fow_id](const media_conf_t& m) {
+                            return m.m_id == media_fow_id;
+                        }
+                ), m_media_conf_list.end()
+        );
+
+    }
+    return 0;
 }

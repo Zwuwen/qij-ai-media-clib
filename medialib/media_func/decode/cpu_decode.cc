@@ -139,3 +139,6 @@ UINT32 ccpu_decode::ctrl(std::string data)
 
     return QJ_BOX_OP_CODE_SUCESS;
 }
+bool ccpu_decode::is_run() {
+    return false;
+}

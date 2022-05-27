@@ -4,12 +4,12 @@
 UINT32 cyuv::yuv420sp2yuv420p(void* src,UINT32 src_len,void* dst,UINT32 dst_len,UINT32 width,UINT32 height,UINT32 h_stride,UINT32 v_stride)
 {
     //420sp point param
-    UINT8* sp_y = (UINT8*)src;
-    UINT8* sp_uv = (UINT8*)(src + h_stride*v_stride);
+    auto* sp_y = (UINT8*)src;
+    UINT8* sp_uv = (UINT8*)(src) + h_stride*v_stride;
     //420p point param
-    UINT8* p_y = (UINT8*)dst;
-    UINT8* p_u = (UINT8*)(dst + h_stride*v_stride);
-    UINT8* p_v = (UINT8*)(dst + h_stride*v_stride*5/4);
+    auto* p_y = (UINT8*)dst;
+    UINT8* p_u = (UINT8*)(dst) + h_stride*v_stride;
+    UINT8* p_v = (UINT8*)(dst) + h_stride*v_stride*5/4;
     //UINT8* p_v = (UINT8*)(p_u + h_stride*v_stride/4);
 
     //change running

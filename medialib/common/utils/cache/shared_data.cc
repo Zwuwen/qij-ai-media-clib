@@ -45,10 +45,13 @@ UINT32 cshared_sample_cache::put(UINT8* data,UINT32 size)
 UINT32 cshared_sample_cache::get(UINT8* data,UINT32 size)
 {
     unique_lock<mutex> ql(this->m_mtx); 
-    if(data == NULL || size == 0 )
+    if(data == nullptr || size == 0 )
     {
         return 0; 
     }
+#pragma mark ÐÂÔö
+    if(this->m_data_len==0) return 0;
+
     if(size > this->m_data_relen)
     {
         memcpy(data,this->m_data,this->m_data_relen);

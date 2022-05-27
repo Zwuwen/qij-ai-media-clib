@@ -17,7 +17,12 @@ public:
     void deinit();
     UINT32 data();
     UINT32 ctrl(std::string data);
+    bool is_run()override;
 public:
+
+//#pragma mark -新增
+    static std::timed_mutex vpu_lock;
+
     static void decode_func(void* in_this);
     std::thread* m_decode_func_thread;
     bool m_running;

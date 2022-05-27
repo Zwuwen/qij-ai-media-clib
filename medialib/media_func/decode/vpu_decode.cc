@@ -4,6 +4,7 @@
 
 #ifdef VPUMEDIA
 
+std::timed_mutex cvpu_decode::vpu_lock;
 cvpu_decode::cvpu_decode()
 {
     this->m_yuv420p = new UINT8[1920*1080*3];
@@ -133,6 +134,10 @@ void cvpu_decode::decode_func(void* in_this)
         {
             continue;
         }
+#pragma mark -新增
+        /*这里等待获取全局的vpu锁*/
+        std::unique_lock<std::timed_mutex> lck(cvpu_decode::vpu_lock,std::defer_lock);
+        if(!lck.try_lock_for(std::chrono::milliseconds(2000))) continue;
         //获取解码的帧数据
         ((cvpu_decode*)in_this)->m_pkt_done = true;
         MPP_RET ret = param->m_mpi->decode_put_packet(param->m_ctx  , param->m_packet);
@@ -221,6 +226,7 @@ void cvpu_decode::decode_func(void* in_this)
                 printf("vpu_decode->m_shared_cache_type = %d\n",vpu_decode->m_shared_cache_type);
                 if(vpu_decode->m_shared_cache_type  & DECODE_DATA_JPG)
                 {
+                    printf("XXXXXXXXXXXXXXXXX = %d\n",vpu_decode->m_shared_cache_type);
                     cjpg jpg;
                     jpg.init_conv_param(hor_stride,ver_stride);
                     jpg.yuv2jpg(vpu_decode->m_yuv420p);
@@ -238,13 +244,17 @@ void cvpu_decode::decode_func(void* in_this)
                      fclose(fp);
                      #endif
                     jpg.release_jpeg_mem();
+                    std::cout<<"jpg data len:"<<decode_info->m_jpg_buf_len<<std::endl;
                 }
                 if(vpu_decode->m_shared_cache_type  & DECODE_DATA_YUV420P)
                 {
                     //cmylog::mylog("INFO","yuv data \n");
-                    memcpy(decode_info->m_yuv_buf,vpu_decode->m_yuv420p,yuv420p_size); 
+                    printf("yyyyyyyyyyyyyyyyyyyyy = %d\n",vpu_decode->m_shared_cache_type);
+                    memcpy(decode_info->m_yuv_buf,vpu_decode->m_yuv420p,yuv420p_size);
                     decode_info->m_yuv_buf_len = yuv420p_size;
+                    std::cout<<"yuv data len:"<<decode_info->m_yuv_buf_len<<std::endl;
                 }
+
                 decode_info->m_width = width;
                 decode_info->m_height = height;
                 if(QJ_BOX_OP_CODE_SUCESS != vpu_decode->m_shared_cache->put((UINT8*)decode_info,sizeof(decode_data_st_t)))
@@ -341,4 +351,8 @@ UINT32 cvpu_decode::ctrl(std::string data)
     return QJ_BOX_OP_CODE_SUCESS;
 }
 
+#pragma mark -新增
+bool cvpu_decode::is_run() {
+    return m_running;
+}
 #endif

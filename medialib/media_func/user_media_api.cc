@@ -3,6 +3,7 @@
 #include "user_media_api.h"
 #include "init_data.h"
 #include "base_media.h"
+#include "algorithm"
 
 char* version()
 {
@@ -185,13 +186,13 @@ int reset_media_conf_by_id(MEDIA_HANDLE handle,char* media_conf)
 
 int get_media_by_id(MEDIA_HANDLE handle,char* media_id,int media_type,decode_data_st_t* decode_data)
 {
-    if(handle == NULL || media_id == NULL || decode_data == NULL)
+    if(handle == nullptr || media_id == nullptr || decode_data == nullptr)
     {
         cmylog::mylog("INFO","input paramer is null \n");
         return QJ_BOX_OP_CODE_INPUTPARAMERR;
     }
     cbase_media* base_media = (cbase_media*)handle;
-    int result =  base_media->get_media_by_id(media_id,media_type,(UINT8*)decode_data,sizeof(decode_data_st_t));
+    int result =  base_media->get_media_by_id(media_id,media_type,reinterpret_cast<uint8_t *>(decode_data),sizeof(decode_data_st_t));
     if(result > 0)
     {
         return QJ_BOX_OP_CODE_SUCESS;
@@ -200,4 +201,96 @@ int get_media_by_id(MEDIA_HANDLE handle,char* media_id,int media_type,decode_dat
     {
         return QJ_BOX_OP_CODE_NOSUPPORT;
     }
+}
+#pragma mark - 以下为新增
+/**
+ * 解析json
+ * @param confs
+ * @param media_conf
+ * @return
+ */
+static bool parse_conf(vector<media_conf_t> &confs, const char *media_conf) {
+    Json::Reader reader;
+    Json::Value root;
+    bool result = false;
+    try {
+        if (reader.parse(media_conf, root)) {
+            const Json::Value media_obj = root["media"];
+            for (auto i = 0; i < media_obj.size(); i++) {
+                media_conf_t conf;
+                conf.m_id = media_obj[i]["id"].asString();
+                conf.m_url = media_obj[i]["url"].asString();
+                conf.m_decode_type = media_obj[i]["decode"].asString();
+                conf.m_decode_data_type = media_obj[i]["decode_data"].asInt();
+                confs.push_back(conf);
+            }
+            result = true;
+        }
+    }
+    catch (...) {
+        cmylog::mylog("ERR", "input configure info exception\n");
+    }
+    return result;
+
+}
+
+/**
+ * 添加媒体资源
+ * @param handle
+ * @param media_conf
+ * @return
+ */
+int add_media_by_handle(MEDIA_HANDLE handle, const char *media_conf) {
+    auto *base_media = (cbase_media *) handle;
+    if (base_media == nullptr || media_conf == nullptr) {
+        cmylog::mylog("ERR", "input handle is null or id is null\n");
+        return QJ_BOX_OP_CODE_INPUTPARAMERR;
+    }
+    Json::Reader reader;
+    Json::Value root;
+    vector<media_conf_t> media_conf_list;
+
+    if (parse_conf(media_conf_list, media_conf)) {
+        for (auto &conf: media_conf_list) {
+            auto result = std::find_if(
+                    begin(base_media->get_media_conf()), end(base_media->get_media_conf()),
+                    [&conf](media_conf_t c) {
+                        return conf.m_id == c.m_id;
+                    });
+            if (result != std::end(base_media->get_media_conf())) return QJ_BOX_OP_CODE_INPUTPARAMERR;
+        }
+
+        return base_media->add_resource(media_conf_list);
+    }
+    return QJ_BOX_OP_CODE_UNKOWNERR;
+}
+
+/**
+ * 删除媒体资源
+ * @param handle
+ * @param media_conf
+ * @return
+ */
+int remove_media_by_handle(MEDIA_HANDLE handle, const char *media_conf) {
+    auto *base_media = (cbase_media *) handle;
+    if (base_media == nullptr || media_conf == nullptr) {
+        cmylog::mylog("ERR", "input handle is null or id is null\n");
+        return QJ_BOX_OP_CODE_INPUTPARAMERR;
+    }
+    vector<media_conf_t> media_conf_list;
+    Json::Reader reader;
+    Json::Value root;
+
+    if (parse_conf(media_conf_list, media_conf)) {
+        for (auto &conf: media_conf_list) {
+            auto result = std::find_if(
+                    begin(base_media->get_media_conf()), end(base_media->get_media_conf()),
+                    [&conf](media_conf_t c) {
+                        return conf.m_id == c.m_id;
+                    });
+            if (result == std::end(base_media->get_media_conf())) return QJ_BOX_OP_CODE_INPUTPARAMERR;
+        }
+        return base_media->remove_resource(media_conf_list);
+    }
+    return QJ_BOX_OP_CODE_UNKOWNERR;
 }
