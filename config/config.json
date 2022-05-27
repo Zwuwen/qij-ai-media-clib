@@ -1,0 +1,19 @@
+{
+    "media":{
+    	"mediaList":[{
+	    "codec": "decode",
+            "url": "rtsp://admin:Admin123@192.168.53.81:554/Streaming/Channels/101?transportmode=unicast&amp;profile=Profile_1",
+	    "mediaType" : "rtsp",
+	    "outputFile" : " ",
+	    "netType":"tcp",
+	    "netSecTimeout":15,
+	    "timeout":"2000000"
+        }]
+    },
+    "log":{
+        "isDelete":true,
+        "isOuputStd":true,
+        "logPath":"./log",
+	"level":"INFO"
+    }
+}
