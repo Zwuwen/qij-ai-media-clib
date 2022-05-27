@@ -245,8 +245,8 @@ void cvpu_decode::decode_func(void* in_this)
                     memcpy(decode_info->m_yuv_buf,vpu_decode->m_yuv420p,yuv420p_size); 
                     decode_info->m_yuv_buf_len = yuv420p_size;
                 }
-                decode_info->m_width = hor_stride;
-                decode_info->m_height = ver_stride;
+                decode_info->m_width = width;
+                decode_info->m_height = height;
                 if(QJ_BOX_OP_CODE_SUCESS != vpu_decode->m_shared_cache->put((UINT8*)decode_info,sizeof(decode_data_st_t)))
                 {
                     cmylog::mylog("ERR","put data failed  \n");

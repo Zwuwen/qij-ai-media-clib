@@ -91,10 +91,10 @@ typedef struct _decode_data_st
         m_width = 0;
         m_height = 0;
     }
+    int m_yuv_buf_len;
+    int m_jpg_buf_len;
     char m_yuv_buf[1920*1080*3];
-    int m_yuv_buf_len; 
     char m_jpg_buf[1920*1080*3];
-    int m_jpg_buf_len; 
     int m_width;
     int m_height;
 }decode_data_st_t;

@@ -21,7 +21,7 @@ public:
     void stop_all_pull_media_task();
     void reset_sample_resource(media_conf_t& media_conf);
     void destory_resource();
-    UINT32 get_media_by_id(char* media_id,char media_type,char* data,int size);
+    UINT32 get_media_by_id(char* media_id,int media_type,char* data,int size);
     /*内部使用函数*/
     static void pull_flow_thread(void* pthis,ffmpeg_pull_flow_param_t& pull_flow_param,media_conf_t& conf);
     static void pull_flow_thread_for_decode(void* pthis,ffmpeg_pull_flow_param_t& pull_flow_param,media_conf_t& conf,cbase_decode* decode);

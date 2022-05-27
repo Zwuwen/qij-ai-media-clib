@@ -204,14 +204,23 @@ Begin:
     }
     //匹配视频流的index
     video_index = -1;
+    std::cout<<"streams_num:"<<param->m_input_ctx->nb_streams<<std::endl;
+//    std::cout<<"streams:"<<param->m_input_ctx->streams[0]->codecpar->codec_type<<std::endl;
+    std::cout<<"streams:"<<param->m_input_ctx->streams[0]->codec->codec_type<<std::endl;
     for(int i = 0;i<param->m_input_ctx->nb_streams;++i)
     {
-        if(param->m_input_ctx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO)
+//        if(param->m_input_ctx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO)
+        if(param->m_input_ctx->streams[i]->codec->codec_type == AVMEDIA_TYPE_VIDEO)
         {
             video_index = i;
             break;
         }
     }
+//    while (true){
+//        std::cout<<"wait..."<<std::endl;
+//        std::cout<<"video_index:"<<video_index<<std::endl;
+//        sleep(1);
+//    }
     if(video_index == -1)
     {
         cmylog::mylog("ERR","find media stream failure,url=%s\n",pconf->m_url.c_str());
@@ -221,6 +230,10 @@ Begin:
     //解码器初始化消息
     cmylog::mylog("INFO","product video index,url=%s\n",pconf->m_url.c_str());
 
+//    while (true){
+//        std::cout<<"wait..."<<std::endl;
+//        sleep(1);
+//    }
     //拉流开始
     #if 0   //解决缓存增加问题，av_read_frame接口导致pkt不断申请内存而不释放内存，导致虚拟内存增加
     param->m_pkt = av_packet_alloc();
@@ -375,7 +388,7 @@ void cbase_media::clean(ffmpeg_pull_flow_param_t& pull_param)
     }
 }
 
-UINT32 cbase_media::get_media_by_id(char* media_id,char media_type,char* data,int size)
+UINT32 cbase_media::get_media_by_id(char* media_id,int media_type,char* data,int size)
 {
     std::string id = media_id;
 

@@ -183,7 +183,7 @@ int reset_media_conf_by_id(MEDIA_HANDLE handle,char* media_conf)
     return QJ_BOX_OP_CODE_UNKOWNERR;
 }
 
-int get_media_by_id(MEDIA_HANDLE handle,char* media_id,char media_type,decode_data_st_t* decode_data)
+int get_media_by_id(MEDIA_HANDLE handle,char* media_id,int media_type,decode_data_st_t* decode_data)
 {
     if(handle == NULL || media_id == NULL || decode_data == NULL)
     {

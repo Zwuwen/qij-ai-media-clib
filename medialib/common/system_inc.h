@@ -46,11 +46,11 @@ extern "C"
 #include <libavutil/imgutils.h>
 };
 
-extern "C"
-{
-#include <async.h>
-#include <hiredis.h>
-};
+//extern "C"
+//{
+//#include <async.h>
+//#include <hiredis.h>
+//};
 #ifdef VPUMEDIA
 extern "C"
 {

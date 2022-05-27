@@ -6,8 +6,7 @@ ifeq ($(ARCH),x86)
   C++ = g++
 endif
 ifeq ($(ARCH),arm)
-#  C++ =  /home/peng/work/tmp/host/usr/bin/aarch64-linux-g++
-  C++ =  /home/dev/data/wrm/host/bin/aarch64-linux-g++
+  C++ =  /home/peng/work/tmp/host/usr/bin/aarch64-linux-g++
 endif
 
 #FLAGS= -Wall -O2 -MD -shared -std=c++11 -U_FORTIFY_SOURCE -g
@@ -28,25 +27,20 @@ ifeq ($(ARCH),arm)
 #SYS_INC := -I /usr/local/aarch64/ffmpeg/include 
 SYS_INC := -I /usr/local/aarch64/jpeg-8d/include
 SYS_INC += -I /usr/local/aarch64/sysroot/usr/include
-#SYS_INC += -I /home/dev/data/wrm/host/aarch64-buildroot-linux-gnu/sysroot/usr/include
 SYS_INC += -I /usr/local/aarch64/jsoncpp/include
-#SYS_INC += -I /usr/local/aarch64/hiredis/include
-
+SYS_INC += -I /usr/local/aarch64/jpeg-8d/include
+SYS_INC += -I /usr/local/aarch64/hiredis/include
 endif
 ifeq ($(ARCH),x86)
 SYS_INC := -I /usr/local/ffmpeg/include -I/usr/include/sys -I/usr/include
 SYS_INC += -I /usr/local/libjpeg/include
 SYS_INC += -I /usr/local/include
+SYS_INC += -I /usr/include
+SYS_INC += -I /usr/include/jsoncpp
 SYS_INC += -I /usr/local/include/hiredis
 endif
 ifeq ($(MEDIAARCH),vpu)
-#SYS_INC += -I/usr/local/aarch64/mpp/inc
-SYS_INC += -I/home/dev/data/wrm/host1/mpp-release/inc
-SYS_INC += -I/home/dev/data/wrm/host1/mpp-release/mpp/inc
-SYS_INC += -I/home/dev/data/wrm/host1/mpp-release/osal/inc/
-SYS_INC += -I/home/dev/data/wrm/host1/mpp-release/utils/
-SYS_INC += -I/home/dev/data/wrm/host1/mpp-release/mpp/base/inc/
-SYS_INC += -I/home/dev/data/wrm/host1/mpp-release/mpp/codec/inc/
+SYS_INC += -I/usr/local/aarch64/mpp/inc
 endif
 
 USER_INC := -I ./common
@@ -84,23 +78,19 @@ TARGET_O := $(foreach src,$(SRC), $(patsubst %cc,%o,$(src)) )
 
 ifeq ($(ARCH),arm)
 LIB = -L/usr/local/aarch64/sysroot/lib -L/usr/local/aarch64/sysroot/usr/lib -lpthread -lm -lavcodec -lswscale -lavutil -lavdevice -lavfilter -lavformat
-#LIB = -L/home/dev/data/wrm/host1/aarch64-buildroot-linux-gnu/sysroot/lib -L/home/dev/data/wrm/host/aarch64-buildroot-linux-gnu/sysroot/usr/lib -lpthread -lm -lavcodec -lswscale -lavutil -lavdevice -lavfilter -lavformat
 LIB += -L/usr/local/aarch64/jpeg-8d/lib -ljpeg
 LIB += -L/usr/local/aarch64/jsoncpp/lib -ljsoncpp
-#LIB += -L/usr/local/aarch64/hiredis/lib -lhiredis
-#LIB += -L/home/peng/work/tmp/host/usr/lib
+LIB += -L/usr/local/aarch64/hiredis/lib -lhiredis
+LIB += -L/home/peng/work/tmp/host/usr/lib 
 endif
 ifeq ($(ARCH),x86)
 LIB = -L/usr/lib -L/usr/local/lib -lpthread -lm 
-LIB +=-L/usr/lib/x86_64-linux-gnu -ljsoncp1920*1080p
+LIB +=-L/usr/lib/x86_64-linux-gnu -ljsoncpp
 LIB += -L/usr/local/ffmpeg/lib -lavcodec -lswscale -lavutil -lavdevice -lavfilter -lavformat
 LIB += -L/usr/local/libjpeg/lib -ljpeg	-L/usr/local/lib -lhiredis -luv
 endif
 ifeq ($(MEDIAARCH),vpu)
-#LIB += -L/usr/local/aarch64/mpp/lib -lrockchip_vpu -lrockchip_mpp
-LIB += -L/home/dev/data/wrm/host1/mpp-release/mpp/ -lrockchip_mpp
-LIB += -L/home/dev/data/wrm/host1/mpp-release/mpp/legacy/ -lrockchip_vpu
-
+LIB += -L/usr/local/aarch64/mpp/lib -lrockchip_vpu -lrockchip_mpp
 endif
 
 TARGET_BIN=libqjmedia.so

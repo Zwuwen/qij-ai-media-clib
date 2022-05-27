@@ -1,0 +1,59 @@
+cmake_minimum_required(VERSION 3.22)
+project(mpp_ffmpeg)
+
+set(CMAKE_CXX_STANDARD 14)
+
+include_directories(medialib/app_func)
+include_directories(medialib/common)
+include_directories(medialib/common/log)
+include_directories(medialib/common/mydef)
+include_directories(medialib/common/utils/cache)
+include_directories(medialib/common/utils/queue/redis)
+include_directories(medialib/common/utils/sync_task)
+include_directories(medialib/init)
+include_directories(medialib/media_func)
+include_directories(medialib/media_func/decode)
+include_directories(medialib/media_func/media_utils)
+include_directories(medialib/media_func/media_utils/jpg)
+include_directories(medialib/media_func/media_utils/yuv)
+
+add_executable(mpp_ffmpeg
+        medialib/app_func/app_api.cc
+        medialib/app_func/app_api.h
+        medialib/common/log/mylog.cc
+        medialib/common/log/mylog.h
+        medialib/common/mydef/mydef.cc
+        medialib/common/mydef/mydef.h
+        medialib/common/mydef/typedef.h
+        medialib/common/utils/cache/shared_data.cc
+        medialib/common/utils/cache/shared_data.h
+        medialib/common/utils/queue/redis/redis_queue.cc
+        medialib/common/utils/queue/redis/redis_queue.h
+        medialib/common/utils/sync_task/async_task.cc
+        medialib/common/utils/sync_task/async_task.h
+        medialib/common/utils/sync_task/base_sync_task.h
+        medialib/common/common.h
+        medialib/common/err_code.h
+        medialib/common/system_inc.h
+        medialib/common/user_inc.h
+        medialib/init/config.cc
+        medialib/init/config.h
+        medialib/init/init_data.h
+        medialib/media_func/decode/base_decode.cc
+        medialib/media_func/decode/base_decode.h
+        medialib/media_func/decode/cpu_decode.cc
+        medialib/media_func/decode/cpu_decode.h
+        medialib/media_func/decode/decode_temp.h
+        medialib/media_func/decode/vpu_decode.cc
+        medialib/media_func/decode/vpu_decode.h
+        medialib/media_func/media_utils/jpg/jpg.cc
+        medialib/media_func/media_utils/jpg/jpg.h
+        medialib/media_func/media_utils/yuv/yuv.cc
+        medialib/media_func/media_utils/yuv/yuv.h
+        medialib/media_func/media_utils/media_param.h
+        medialib/media_func/base_media.cc
+        medialib/media_func/base_media.h
+        medialib/media_func/data_def.h
+        medialib/media_func/user_media_api.cc
+        medialib/media_func/user_media_api.h
+        main.cc)

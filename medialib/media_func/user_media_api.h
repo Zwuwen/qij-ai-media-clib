@@ -45,6 +45,6 @@ QJ_MEDIA_API int reset_media_conf_by_id(MEDIA_HANDLE handle,char* media_conf);
         width,height:数据分辨率
     返回值：返回真实媒体数据长度
 */
-QJ_MEDIA_API int get_media_by_id(MEDIA_HANDLE handle,char* media_id,char media_type,decode_data_st_t* decode_data);
+QJ_MEDIA_API int get_media_by_id(MEDIA_HANDLE handle,char* media_id,int media_type,decode_data_st_t* decode_data);
 
 #endif // __USER_MEDIA_H__
