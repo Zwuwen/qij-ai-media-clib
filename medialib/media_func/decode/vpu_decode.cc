@@ -30,37 +30,41 @@ void cvpu_decode::init(void* param)
 }
 void cvpu_decode::deinit()
 {
-    if(m_decode_func_thread != NULL)
+    if(m_decode_func_thread != nullptr)
     {
-        m_running = false;
-        m_decode_func_thread->join();
-        delete m_decode_func_thread;
-        m_decode_func_thread = NULL;
+        if(m_running ){
+            m_running = false;
+            m_decode_func_thread->join();
+            delete m_decode_func_thread;
+            m_decode_func_thread = NULL;
+        }
     }
-    if(m_shared_cache != NULL)
+    if(m_shared_cache != nullptr)
     {
         delete m_shared_cache;
-        m_shared_cache = NULL;
+        m_shared_cache = nullptr;
     }
-   
+    if(m_param == nullptr){
+        return;
+    }
     if(m_param->m_mpi->reset(m_param->m_ctx) != MPP_OK)
     {
         cmylog::mylog("ERR","mpp reset failed\n");
         return;
     }
-    if (m_param->m_packet) 
+    if (m_param->m_packet)
     {
         mpp_packet_deinit(&m_param->m_packet);
         m_param->m_packet = NULL;
     }
 
-    if (m_param->m_frame) 
+    if (m_param->m_frame)
     {
         mpp_frame_deinit(&m_param->m_frame);
         m_param->m_frame = NULL;
     }
 
-    if (m_param->m_ctx) 
+    if (m_param->m_ctx)
     {
         mpp_destroy(m_param->m_ctx);
         m_param->m_ctx = NULL;
@@ -72,7 +76,7 @@ void cvpu_decode::deinit()
         m_param->m_buffer = NULL;
     }
 
-    if (m_param->m_data.frm_grp) 
+    if (m_param->m_data.frm_grp)
     {
         mpp_buffer_group_put(m_param->m_data.frm_grp);
         m_param->m_data.frm_grp = NULL;

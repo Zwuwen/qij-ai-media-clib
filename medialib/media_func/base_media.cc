@@ -203,13 +203,20 @@ Begin:
     //打开媒体源
     cmylog::mylog("INFO","avformat_open_input,id=%s\n",pconf->m_id.c_str());
     param->m_input_ctx = avformat_alloc_context();
-    retvalue = avformat_open_input(&param->m_input_ctx,
-                                                                                (char*)pconf->m_url.c_str(),NULL,
-                                                                                &param->m_opts);
-    if(retvalue < 0)
-    {
-        cmylog::mylog("ERR","could not open meidia source,url=%s\n",pconf->m_url.c_str());
-        goto End;
+
+    while (TRUE){
+        retvalue = avformat_open_input(&param->m_input_ctx, (char*)pconf->m_url.c_str(),NULL, &param->m_opts);
+        if(retvalue < 0)
+        {
+            cmylog::mylog("ERR","could not open meidia source,url=%s\n",pconf->m_url.c_str());
+            std::cout<<"could not open meidia source"<<std::endl;
+            /* retry always  */
+
+            sleep(5);
+            continue;
+//            goto End;
+        }
+        break;
     }
     param->m_input_ctx->flags |= AVFMT_FLAG_NONBLOCK;
     cmylog::mylog("INFO","open meidia success,url=%s\n",pconf->m_id.c_str());

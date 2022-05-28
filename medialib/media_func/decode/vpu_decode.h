@@ -14,7 +14,7 @@ public:
     ~cvpu_decode();
 public:
     void init(void* param);
-    void deinit();
+    void deinit() override;
     UINT32 data();
     UINT32 ctrl(std::string data);
     bool is_run()override;
