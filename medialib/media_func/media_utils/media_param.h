@@ -75,7 +75,7 @@ typedef struct _ffmpeg_pull_flow_param
     {
         this->m_id = "";        //拉流参数ID
         this->m_is_running = false;
-        this->m_thread = NULL;
+        this->m_thread = nullptr;
         this->m_video_index = -1;
         this->m_avcodec =NULL;
         this->m_avcodectxt =NULL;

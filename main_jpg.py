@@ -108,17 +108,19 @@ class MediaFunc:
             jpg_size = decode_data.jpg_len
 
         if yuv_size:
-            path = "jpg/" + str(MediaFunc.count) + "-" + media_id.decode() + ".yuv"
-            with open(path, "wb") as f:
-                print("yuv image size:", yuv_size)
-                f.write(bytes(yuv_buf[0:yuv_size]))
-                MediaFunc.count = MediaFunc.count + 1
+            print("yuv image size:", yuv_size)
+        # path = "jpg/" + str(MediaFunc.count) + "-" + media_id.decode() + ".yuv"
+            # with open(path, "wb") as f:
+            #     print("yuv image size:", yuv_size)
+            #     f.write(bytes(yuv_buf[0:yuv_size]))
+            #     MediaFunc.count = MediaFunc.count + 1
         if jpg_size:
-            path = "jpg/" + str(MediaFunc.count) + "-" + media_id.decode() + ".jpg"
-            with open(path, "wb") as f:
-                print("jpg image size:", jpg_size)
-                f.write(bytes(jpg_buf[0:jpg_size]))
-                MediaFunc.count = MediaFunc.count + 1
+            print("jpg image size:", jpg_size)
+            # path = "jpg/" + str(MediaFunc.count) + "-" + media_id.decode() + ".jpg"
+            # with open(path, "wb") as f:
+            #     print("jpg image size:", jpg_size)
+            #     f.write(bytes(jpg_buf[0:jpg_size]))
+            #     MediaFunc.count = MediaFunc.count + 1
 
 
 if __name__ == '__main__':
@@ -160,7 +162,7 @@ if __name__ == '__main__':
     MediaFunc.init(media_configure_str.encode())
 
     MediaFunc.start_all()
-    time.sleep(10)
+    # time.sleep(10)
     # MediaFunc.start_sample_media(b"media1")
 
     count = 0
@@ -175,15 +177,11 @@ if __name__ == '__main__':
         media_configure_str = json.dumps(conf_dic3)
         result = MediaFunc.add_media_by_handle(media_configure_str.encode())
         print(f"add midia result:{result}")
-        # while True:
-        #     time.sleep(5)
-        #     print("sleep")
-
         if result == 0:
             result = MediaFunc.start_sample_media(b"media3")
+            # time.sleep(5)
             print(f'start media3:{result}')
 
-        time.sleep(1)
         print(f"get midia3")
         MediaFunc.get_media_by_id(b"media3", 2)
         # time.sleep(1)

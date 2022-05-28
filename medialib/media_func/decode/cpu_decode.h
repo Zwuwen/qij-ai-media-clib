@@ -15,7 +15,7 @@ public:
     void deinit();
     UINT32 data();
     UINT32 ctrl(std::string data);
-#pragma mark -ĞÂÔö
+#pragma mark -æ–°å¢
     bool is_run() override;
 public:
     ffmpeg_pull_flow_param_t* m_param;

@@ -82,16 +82,15 @@ MEDIA_HANDLE init_media_qjapi(char* media_conf)
 //回收媒体资源，出入句柄
 void deinit_media_qjapi(MEDIA_HANDLE handle)
 {
-    cbase_media* base_media = (cbase_media*)handle;
-    if(base_media == NULL)
+    auto* base_media = (cbase_media*)handle;
+    if(base_media == nullptr)
     {
         cmylog::mylog("INFO","input handle is null\n");
         return;
     }
     base_media->destory_resource();
     delete base_media;
-    handle = NULL;
-    return NULL;
+    handle = nullptr;
 }
 //启动所有媒体资源
 int start_all_media(MEDIA_HANDLE handle)
@@ -191,7 +190,7 @@ int get_media_by_id(MEDIA_HANDLE handle,char* media_id,int media_type,decode_dat
         cmylog::mylog("INFO","input paramer is null \n");
         return QJ_BOX_OP_CODE_INPUTPARAMERR;
     }
-    cbase_media* base_media = (cbase_media*)handle;
+    auto* base_media = (cbase_media*)handle;
     int result =  base_media->get_media_by_id(media_id,media_type,reinterpret_cast<uint8_t *>(decode_data),sizeof(decode_data_st_t));
     if(result > 0)
     {

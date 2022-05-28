@@ -84,24 +84,24 @@ void cbase_media::destory_resource()
 
 UINT32 cbase_media::start_pull_media_task(std::string media_flow_id)
 {
-    if(this->m_media_conf_list.size() <= 0)
+    if(this->m_media_conf_list.empty())
     {
         cmylog::mylog("WAR","media configure list size <=0\n");
         return QJ_BOX_OP_CODE_INPUTPARAMERR;
     }
     try{
         //启动拉流线程
-        for(auto it = this->m_media_conf_list.begin() ; it != this->m_media_conf_list.end(); ++it)
+        for(auto & it : this->m_media_conf_list)
         {
-            if(it->m_id != media_flow_id)
+            if(it.m_id != media_flow_id)
                 continue;
-            for(auto pull_it = this->m_pull_flow_param_list.begin() ; pull_it != this->m_pull_flow_param_list.end(); ++pull_it)
+            for(auto & pull_it : this->m_pull_flow_param_list)
             {
-                if(pull_it->m_id == it->m_id)
+                if(pull_it.m_id == it.m_id)
                 {
-                    pull_it->m_thread = new std::thread([this,pull_it,it]()mutable{
-                        pull_it->m_is_running = true;
-                        cbase_media::pull_flow_thread((void*)this,*pull_it,*it);
+                    pull_it.m_thread = new std::thread([this,&pull_it,&it]()mutable{
+//                        pull_it.m_is_running = true;
+                        cbase_media::pull_flow_thread((void*)this,pull_it,it);
                     });
                     break;
                 }
@@ -134,7 +134,7 @@ UINT32 cbase_media::start_all_pull_media_task()
                 {
                     cmylog::mylog("INFO","media handler thread begin,id=%s\n",pull_it->m_id.c_str());
                     pull_it->m_thread = new std::thread([this,pull_it,it]()mutable{
-                    pull_it->m_is_running = true;
+//                    pull_it->m_is_running = true;
                     cbase_media::pull_flow_thread((void*)this,*pull_it,*it);
                     });
                     break;
@@ -172,6 +172,8 @@ void cbase_media::pull_flow_thread(void* pthis,ffmpeg_pull_flow_param_t& pull_fl
     pull_flow_param.m_decode = new ccpu_decode();
     #endif
     assert(pull_flow_param.m_decode !=NULL);
+
+    pull_flow_param.m_is_running = true;
     cbase_media::pull_flow_thread_for_decode(pthis,pull_flow_param, conf,pull_flow_param.m_decode);
 }
 
@@ -416,18 +418,24 @@ UINT32 cbase_media::get_media_by_id(const char* media_id,int media_type,uint8_t 
      {
          if(it.m_id == id)
          {
+             std::cout<<"-1"<<std::endl;
              //查看线程是否启动
             if(!it.m_is_running)
             {
+                std::cout<<"0"<<std::endl;
                 return 0;
             } 
 #pragma mark -新增
              if(it.m_decode != nullptr)
             {
+                std::cout<<"1"<<std::endl;
                 if(!it.m_decode->is_run()){
+                    std::cout<<"2"<<std::endl;
                     return 0;
                 }
+                std::cout<<"3"<<std::endl;
                 it.m_decode->set_cache_type(media_type);
+                std::cout<<"4"<<std::endl;
                 return it.m_decode->get((UINT8*)data, (UINT32)size);
             }
          }
