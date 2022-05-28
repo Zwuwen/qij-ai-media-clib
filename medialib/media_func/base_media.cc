@@ -420,24 +420,18 @@ UINT32 cbase_media::get_media_by_id(const char* media_id,int media_type,uint8_t 
      {
          if(it.m_id == id)
          {
-             std::cout<<"-1"<<std::endl;
              //查看线程是否启动
             if(!it.m_is_running)
             {
-                std::cout<<"0"<<std::endl;
                 return 0;
             } 
 #pragma mark -新增
              if(it.m_decode != nullptr)
             {
-                std::cout<<"1"<<std::endl;
                 if(!it.m_decode->is_run()){
-                    std::cout<<"2"<<std::endl;
                     return 0;
                 }
-                std::cout<<"3"<<std::endl;
                 it.m_decode->set_cache_type(media_type);
-                std::cout<<"4"<<std::endl;
                 return it.m_decode->get((UINT8*)data, (UINT32)size);
             }
          }
