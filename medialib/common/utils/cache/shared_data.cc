@@ -12,7 +12,7 @@ cshared_sample_cache::cshared_sample_cache(UINT32 size)
         this->m_data = new UINT8[size];
         this->m_data_len = size;
     }
-    this->m_data_relen = m_data_len;
+    this->m_data_relen = 0;
 }
 cshared_sample_cache::~cshared_sample_cache()
 {
@@ -49,8 +49,9 @@ UINT32 cshared_sample_cache::get(UINT8* data,UINT32 size)
     {
         return 0; 
     }
-#pragma mark ĞÂÔö
+#pragma mark æ–°å¢
     if(this->m_data_len==0) return 0;
+    if(this->m_data_relen==0) return 0;
 
     if(size > this->m_data_relen)
     {

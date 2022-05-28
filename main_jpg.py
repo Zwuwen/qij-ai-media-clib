@@ -61,10 +61,10 @@ class MediaFunc:
         return MediaFunc.media_lib.add_media_by_handle(MediaFunc.handle, c_char_p(conf))
 
     @staticmethod
-    def remove_media_by_handle(conf):
+    def remove_media_by_handle(media_id):
         MediaFunc.media_lib.remove_media_by_handle.argtypes = [c_void_p, c_char_p]
         MediaFunc.media_lib.remove_media_by_handle.restype = c_int
-        return MediaFunc.media_lib.remove_media_by_handle(MediaFunc.handle, c_char_p(conf))
+        return MediaFunc.media_lib.remove_media_by_handle(MediaFunc.handle, media_id)
 
     @staticmethod
     def start_all():
@@ -97,30 +97,36 @@ class MediaFunc:
         jpg_size = None
         yuv_buf = None
         yuv_size = None
-        if buf_type == 1:
-            yuv_buf, yuv_size = get_yuv_raw(decode_data.yuv_buf, decode_data.yuv_len, w=width, h=height)
-        elif buf_type == 2:
-            jpg_buf = decode_data.jpg_buf
-            jpg_size = decode_data.jpg_len
-        elif buf_type == 3:
-            yuv_buf, yuv_size = get_yuv_raw(decode_data.yuv_buf, decode_data.yuv_len, w=width, h=height)
-            jpg_buf = decode_data.jpg_buf
-            jpg_size = decode_data.jpg_len
 
-        if yuv_size:
-            print("yuv image size:", yuv_size)
-        # path = "jpg/" + str(MediaFunc.count) + "-" + media_id.decode() + ".yuv"
-            # with open(path, "wb") as f:
-            #     print("yuv image size:", yuv_size)
-            #     f.write(bytes(yuv_buf[0:yuv_size]))
-            #     MediaFunc.count = MediaFunc.count + 1
-        if jpg_size:
-            print("jpg image size:", jpg_size)
-            # path = "jpg/" + str(MediaFunc.count) + "-" + media_id.decode() + ".jpg"
-            # with open(path, "wb") as f:
-            #     print("jpg image size:", jpg_size)
-            #     f.write(bytes(jpg_buf[0:jpg_size]))
-            #     MediaFunc.count = MediaFunc.count + 1
+        return True
+        # if buf_type == 1:
+        #     yuv_buf, yuv_size = get_yuv_raw(decode_data.yuv_buf, decode_data.yuv_len, w=width, h=height)
+        # elif buf_type == 2:
+        #     jpg_buf = decode_data.jpg_buf
+        #     jpg_size = decode_data.jpg_len
+        # elif buf_type == 3:
+        #     yuv_buf, yuv_size = get_yuv_raw(decode_data.yuv_buf, decode_data.yuv_len, w=width, h=height)
+        #     jpg_buf = decode_data.jpg_buf
+        #     jpg_size = decode_data.jpg_len
+        #
+        # if yuv_size:
+        #     print("yuv image size:", yuv_size)
+        # # path = "jpg/" + str(MediaFunc.count) + "-" + media_id.decode() + ".yuv"
+        # # with open(path, "wb") as f:
+        # #     print("yuv image size:", yuv_size)
+        # #     f.write(bytes(yuv_buf[0:yuv_size]))
+        # #     MediaFunc.count = MediaFunc.count + 1
+        # if jpg_size:
+        #     print("jpg image size:", jpg_size)
+        #     # path = "jpg/" + str(MediaFunc.count) + "-" + media_id.decode() + ".jpg"
+        #     # with open(path, "wb") as f:
+        #     #     print("jpg image size:", jpg_size)
+        #     #     f.write(bytes(jpg_buf[0:jpg_size]))
+        #     #     MediaFunc.count = MediaFunc.count + 1
+        #
+        # if yuv_size or jpg_size:
+        #     return True
+        # return False
 
 
 if __name__ == '__main__':
@@ -166,24 +172,43 @@ if __name__ == '__main__':
     # MediaFunc.start_sample_media(b"media1")
 
     count = 0
+    count_media3_add = 0
     first = True
+    media3_is_use = True
     while True:
         # MediaFunc.get_media_by_id(b"media1")
         # time.sleep(1)
         print(f"get midia")
         MediaFunc.get_media_by_id(b"media1", 1)
         # time.sleep(1)
-        print(f"add midia:{conf_dic3}")
-        media_configure_str = json.dumps(conf_dic3)
-        result = MediaFunc.add_media_by_handle(media_configure_str.encode())
-        print(f"add midia result:{result}")
-        if result == 0:
-            result = MediaFunc.start_sample_media(b"media3")
-            # time.sleep(5)
-            print(f'start media3:{result}')
 
-        print(f"get midia3")
-        MediaFunc.get_media_by_id(b"media3", 2)
+        if media3_is_use:
+            print(f"add midia:{conf_dic3}")
+            media_configure_str = json.dumps(conf_dic3)
+            result = MediaFunc.add_media_by_handle(media_configure_str.encode())
+            print(f"add midia result:{result}")
+
+            if result == 0:
+                result = MediaFunc.start_sample_media(b"media3")
+                # time.sleep(5)
+                print(f'start media3:{result}')
+
+            print(f"get midia3")
+            result = MediaFunc.get_media_by_id(b"media3", 2)
+            if result: count += 1
+
+        if count == 1000:
+            result = MediaFunc.remove_media_by_handle(b"media3")
+            print(f"remove media3 result:{result}")
+            if result==0: print(f"remove media3{'😂' * 8}")
+            media3_is_use = False
+            count_media3_add += 1
+
+        if count_media3_add == 1000:
+            print(f'reuse media3{"🚕"*8}')
+            count_media3_add = 0
+            count = 0
+            media3_is_use = True
         # time.sleep(1)
         # MediaFunc.get_media_by_id(b"media2", 2)
         # time.sleep(1)

@@ -320,16 +320,18 @@ End:
 
 void cbase_media::stop_pull_media_task(std::string media_flow_id)
 {
-    for(auto pull_it = this->m_pull_flow_param_list.begin() ; pull_it != this->m_pull_flow_param_list.end(); ++pull_it)
+    for(auto & pull_it : this->m_pull_flow_param_list)
     {
-        if(pull_it->m_id != media_flow_id) continue;
-        if(pull_it->m_id == media_flow_id)
+        if(pull_it.m_id != media_flow_id) continue;
+        if(pull_it.m_id == media_flow_id)
         {
-            if(pull_it->m_is_running){
-                pull_it->m_is_running = false;
-                pull_it->m_thread->join();
-                delete pull_it->m_thread;
-                pull_it->m_thread = nullptr;
+            if(pull_it.m_is_running){
+                pull_it.m_is_running = false;
+                if(pull_it.m_thread){
+                    pull_it.m_thread->join();
+                    delete pull_it.m_thread;
+                    pull_it.m_thread = nullptr;
+                }
             }
         }
         break;
@@ -470,36 +472,33 @@ int cbase_media::add_resource(vector<media_conf_t> &media_conf_list) {
 }
 /**
  * 删除资源
- * @param media_confs
+ * @param media_id
  * @return
  */
-int cbase_media::remove_resource(vector<media_conf_t>& media_confs) {
+int cbase_media::remove_resource(const string& media_id) {
+   string media_fow_id = media_id;
+    /*①停止拉流解码线程，回收相应资源*/
+    stop_pull_media_task(media_fow_id);
 
-    for(const auto& conf:media_confs){
-       string media_fow_id = conf.m_id;
-        /*①停止拉流解码线程，回收相应资源*/
-        stop_pull_media_task(media_fow_id);
+    /*②清除拉流/解码句柄*/
+    m_pull_flow_param_list.erase(
+            std::remove_if(
+                    begin(m_pull_flow_param_list), end(m_pull_flow_param_list),
+                    [&media_fow_id](const ffmpeg_pull_flow_param_t& m) {
+                        return m.m_id == media_fow_id;
+                    }
+            ), m_pull_flow_param_list.end()
+    );
 
-        /*②清除拉流/解码句柄*/
-        m_pull_flow_param_list.erase(
-                std::remove_if(
-                        begin(m_pull_flow_param_list), end(m_pull_flow_param_list),
-                        [&media_fow_id](const ffmpeg_pull_flow_param_t& m) {
-                            return m.m_id == media_fow_id;
-                        }
-                ), m_pull_flow_param_list.end()
-        );
+    /*③清除资源句柄*/
+    m_media_conf_list.erase(
+            std::remove_if(
+                    begin(m_media_conf_list), end(m_media_conf_list),
+                    [&media_fow_id](const media_conf_t& m) {
+                        return m.m_id == media_fow_id;
+                    }
+            ), m_media_conf_list.end()
+    );
 
-        /*③清除资源句柄*/
-        m_media_conf_list.erase(
-                std::remove_if(
-                        begin(m_media_conf_list), end(m_media_conf_list),
-                        [&media_fow_id](const media_conf_t& m) {
-                            return m.m_id == media_fow_id;
-                        }
-                ), m_media_conf_list.end()
-        );
-
-    }
     return 0;
 }

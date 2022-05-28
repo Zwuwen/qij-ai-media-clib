@@ -27,7 +27,7 @@ public:
 #pragma mark - 新增
     std::list<media_conf_t>& get_media_conf();
     int add_resource(vector<media_conf_t>& media_conf_list);
-    int remove_resource(vector<media_conf_t>& media_fow_id);
+    int remove_resource(const string& media_id);
 
     void destory_resource();
     UINT32 get_media_by_id(const char* media_id,int media_type,uint8_t * data,int size);
@@ -46,8 +46,8 @@ private:
     std::list<ffmpeg_pull_flow_param_t> m_pull_flow_param_list;
     //流配置信息
     std::list<media_conf_t> m_media_conf_list;
-public:
-    std::map<std::string,std::string> m_redis_info;
+//public:
+//    std::map<std::string,std::string> m_redis_info;
 };
 
 #endif

@@ -264,32 +264,58 @@ int add_media_by_handle(MEDIA_HANDLE handle, const char *media_conf) {
     return QJ_BOX_OP_CODE_UNKOWNERR;
 }
 
+///**
+// * 删除媒体资源
+// * @param handle
+// * @param media_id
+// * @return
+// */
+//int remove_media_by_handle(MEDIA_HANDLE handle, const char *media_id) {
+//    auto *base_media = (cbase_media *) handle;
+//    if (base_media == nullptr || media_id == nullptr) {
+//        cmylog::mylog("ERR", "input handle is null or id is null\n");
+//        return QJ_BOX_OP_CODE_INPUTPARAMERR;
+//    }
+//    vector<media_conf_t> media_conf_list;
+//    Json::Reader reader;
+//    Json::Value root;
+//
+//    if (parse_conf(media_conf_list, media_id)) {
+//        for (auto &conf: media_conf_list) {
+//            auto result = std::find_if(
+//                    begin(base_media->get_media_conf()), end(base_media->get_media_conf()),
+//                    [&conf](media_conf_t c) {
+//                        return conf.m_id == c.m_id;
+//                    });
+//            if (result == std::end(base_media->get_media_conf())) return QJ_BOX_OP_CODE_INPUTPARAMERR;
+//        }
+//        return base_media->remove_resource(media_conf_list);
+//    }
+//
+//    return QJ_BOX_OP_CODE_UNKOWNERR;
+//}
 /**
  * 删除媒体资源
  * @param handle
- * @param media_conf
+ * @param media_id
  * @return
  */
-int remove_media_by_handle(MEDIA_HANDLE handle, const char *media_conf) {
+int remove_media_by_handle(MEDIA_HANDLE handle, const char *media_id) {
     auto *base_media = (cbase_media *) handle;
-    if (base_media == nullptr || media_conf == nullptr) {
+    if (base_media == nullptr || media_id == nullptr) {
         cmylog::mylog("ERR", "input handle is null or id is null\n");
         return QJ_BOX_OP_CODE_INPUTPARAMERR;
     }
-    vector<media_conf_t> media_conf_list;
     Json::Reader reader;
     Json::Value root;
 
-    if (parse_conf(media_conf_list, media_conf)) {
-        for (auto &conf: media_conf_list) {
-            auto result = std::find_if(
-                    begin(base_media->get_media_conf()), end(base_media->get_media_conf()),
-                    [&conf](media_conf_t c) {
-                        return conf.m_id == c.m_id;
-                    });
-            if (result == std::end(base_media->get_media_conf())) return QJ_BOX_OP_CODE_INPUTPARAMERR;
-        }
-        return base_media->remove_resource(media_conf_list);
-    }
+    auto result = std::find_if(
+            begin(base_media->get_media_conf()), end(base_media->get_media_conf()),
+            [&media_id](media_conf_t &c) {
+                return media_id == c.m_id;
+            });
+
+    if (result == std::end(base_media->get_media_conf())) return QJ_BOX_OP_CODE_INPUTPARAMERR;
+    return base_media->remove_resource(media_id);
     return QJ_BOX_OP_CODE_UNKOWNERR;
 }

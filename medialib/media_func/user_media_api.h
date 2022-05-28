@@ -47,7 +47,7 @@ QJ_MEDIA_API int reset_media_conf_by_id(MEDIA_HANDLE handle,char* media_conf);
 */
 QJ_MEDIA_API int get_media_by_id(MEDIA_HANDLE handle,char* media_id,int media_type,decode_data_st_t* decode_data);
 
-QJ_MEDIA_API int remove_media_by_handle(MEDIA_HANDLE handle,const char* media_conf);
+QJ_MEDIA_API int remove_media_by_handle(MEDIA_HANDLE handle,const char* media_id);
 QJ_MEDIA_API int add_media_by_handle(MEDIA_HANDLE handle,const char* media_conf);
 
 #endif // __USER_MEDIA_H__
