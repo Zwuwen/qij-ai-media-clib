@@ -55,13 +55,13 @@ void cmylog::mylog(string log_level,char* fmt,... )
     struct tm* cur_time = localtime(&timep);
     if(log_level == "INFO")
         snprintf(buf,2048,"\033[47;32m%s:%d-%d-%d %d:%d:%d \033[0m",log_level.c_str(),(1900+cur_time->tm_year),(1+cur_time->tm_mon),cur_time->tm_mday,
-                                                                                                (cur_time->tm_hour+12),cur_time->tm_min,cur_time->tm_sec);
+                                                                                                (cur_time->tm_hour),cur_time->tm_min,cur_time->tm_sec);
     if(log_level == "WAR")
         snprintf(buf,2048,"\033[47;33m%s:%d-%d-%d %d:%d:%d \033[0m",log_level.c_str(),(1900+cur_time->tm_year),(1+cur_time->tm_mon),cur_time->tm_mday,
-                                                                                                (cur_time->tm_hour+12),cur_time->tm_min,cur_time->tm_sec);
+                                                                                                (cur_time->tm_hour),cur_time->tm_min,cur_time->tm_sec);
     if(log_level == "ERR")
         snprintf(buf,2048,"\033[47;31m%s:%d-%d-%d %d:%d:%d \033[0m",log_level.c_str(),(1900+cur_time->tm_year),(1+cur_time->tm_mon),cur_time->tm_mday,
-                                                                                                (cur_time->tm_hour+12),cur_time->tm_min,cur_time->tm_sec);
+                                                                                                (cur_time->tm_hour),cur_time->tm_min,cur_time->tm_sec);
     va_start(args,fmt);
     vsnprintf(buf + strlen(buf),2048-strlen(buf),fmt,args);
     va_end(args);

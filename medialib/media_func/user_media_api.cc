@@ -35,6 +35,9 @@ MEDIA_HANDLE init_media_qjapi(char* media_conf)
             //媒体配置信息
             vector<media_conf_t> media_conf_list;
             const Json::Value media_obj = root["media"];
+            if(media_obj.size()==0){
+                return nullptr;
+            }
             for(auto i = 0 ; i < media_obj.size() ; i++)
             {
                 media_conf_t conf;
