@@ -248,11 +248,9 @@ OPEN:
     }
     //匹配视频流的index
     video_index = -1;
-    std::cout<<"streams_num:"<<param->m_input_ctx->nb_streams<<std::endl;
-//    std::cout<<"streams:"<<param->m_input_ctx->streams[0]->codecpar->codec_type<<std::endl;
-    std::cout<<"streams:"<<param->m_input_ctx->streams[0]->codec->codec_type<<std::endl;
     for(int i = 0;i<param->m_input_ctx->nb_streams;++i)
     {
+        /*new version use this*/
 //        if(param->m_input_ctx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO)
         if(param->m_input_ctx->streams[i]->codec->codec_type == AVMEDIA_TYPE_VIDEO)
         {
@@ -263,11 +261,11 @@ OPEN:
     if(video_index == -1)
     {
         cmylog::mylog("ERR","find media stream failure,url=%s\n",pconf->m_url.c_str());
-        goto End;
+        goto OPEN;
     }
     cmylog::mylog("INFO","find stream infomation success,url=%s\n",pconf->m_url.c_str());
-    //解码器初始化消息
-    cmylog::mylog("INFO","product video index,url=%s\n",pconf->m_url.c_str());
+//    //解码器初始化消息
+//    cmylog::mylog("INFO","product video index,url=%s\n",pconf->m_url.c_str());
 
     //拉流开始
     #if 0   //解决缓存增加问题，av_read_frame接口导致pkt不断申请内存而不释放内存，导致虚拟内存增加
@@ -286,7 +284,6 @@ OPEN:
     {
         if (duration_cast<seconds>(steady_clock::now() - start_time).count() > atoi(pconf->m_unlink_timeout.c_str())) {
             cmylog::mylog("WAR", "av_read_frame() timeout,url=%s\n", pconf->m_url.c_str());
-            std::cout<<"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXav_read_frame() timeout"<<std::endl;
 #pragma mark - 断网时没有释放vpu相关资源 begin 会重新init
             in_this->clean_pull_resource(pconf->m_id);
 	        start_time = steady_clock::now();

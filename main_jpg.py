@@ -89,44 +89,28 @@ class MediaFunc:
         # 写文件
         if ret < 0:
             return
-
         width = decode_data.width
         height = decode_data.height
+        yuv_buf = decode_data.yuv_buf
+        yuv_size = decode_data.yuv_len
+        jpg_buf = decode_data.jpg_buf
+        jpg_size = decode_data.jpg_len
 
-        jpg_buf = None
-        jpg_size = None
-        yuv_buf = None
-        yuv_size = None
+        if yuv_size:
+            print("yuv image size:", yuv_size)
+            # path = "jpg/" + str(MediaFunc.count) + "-" + media_id.decode() + ".yuv"
+            # with open(path, "wb") as f:
+            #     f.write(bytes(yuv_buf[0:yuv_size]))
+            #     MediaFunc.count = MediaFunc.count + 1
+        if jpg_size:
+            print("jpg image size:", jpg_size)
+            # path = "jpg/" + str(MediaFunc.count) + "-" + media_id.decode() + ".jpg"
+            # with open(path, "wb") as f:
+            #     f.write(bytes(jpg_buf[0:jpg_size]))
+            #     MediaFunc.count = MediaFunc.count + 1
 
-        return True
-        # if buf_type == 1:
-        #     yuv_buf, yuv_size = get_yuv_raw(decode_data.yuv_buf, decode_data.yuv_len, w=width, h=height)
-        # elif buf_type == 2:
-        #     jpg_buf = decode_data.jpg_buf
-        #     jpg_size = decode_data.jpg_len
-        # elif buf_type == 3:
-        #     yuv_buf, yuv_size = get_yuv_raw(decode_data.yuv_buf, decode_data.yuv_len, w=width, h=height)
-        #     jpg_buf = decode_data.jpg_buf
-        #     jpg_size = decode_data.jpg_len
-        #
-        # if yuv_size:
-        #     print("yuv image size:", yuv_size)
-        # # path = "jpg/" + str(MediaFunc.count) + "-" + media_id.decode() + ".yuv"
-        # # with open(path, "wb") as f:
-        # #     print("yuv image size:", yuv_size)
-        # #     f.write(bytes(yuv_buf[0:yuv_size]))
-        # #     MediaFunc.count = MediaFunc.count + 1
-        # if jpg_size:
-        #     print("jpg image size:", jpg_size)
-        #     # path = "jpg/" + str(MediaFunc.count) + "-" + media_id.decode() + ".jpg"
-        #     # with open(path, "wb") as f:
-        #     #     print("jpg image size:", jpg_size)
-        #     #     f.write(bytes(jpg_buf[0:jpg_size]))
-        #     #     MediaFunc.count = MediaFunc.count + 1
-        #
-        # if yuv_size or jpg_size:
-        #     return True
-        # return False
+        if yuv_size or jpg_size:
+            return True
 
 
 if __name__ == '__main__':
