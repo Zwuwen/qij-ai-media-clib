@@ -33,7 +33,7 @@ public:
     UINT32 get_media_by_id(const char* media_id,int media_type,uint8_t * data,int size);
     /*内部使用函数*/
     static void pull_flow_thread(void* pthis,ffmpeg_pull_flow_param_t& pull_flow_param,media_conf_t& conf);
-    static void pull_flow_thread_for_decode(void* pthis,ffmpeg_pull_flow_param_t& pull_flow_param,media_conf_t& conf,cbase_decode* decode);
+    static void pull_flow_thread_for_decode(void* p_this, ffmpeg_pull_flow_param_t& pull_flow_param, media_conf_t& conf, cbase_decode* decode);
     void clean_pull_resource(std::string media_flow_id);
     void clean_all_pull_resource();
     void clean(ffmpeg_pull_flow_param_t& pull_param);

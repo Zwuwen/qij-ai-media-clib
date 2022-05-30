@@ -140,7 +140,7 @@ if __name__ == '__main__':
     media3 = {"id": "media3", "url": "", "decode": "VPU", "decode_data": 2}
     media4 = {"id": "media4", "url": "", "decode": "VPU", "decode_data": 2}
 
-    conf_dic1 = {"media": [], "log": {"isdelete": True, "isoutput": True, "logpath": "./log", "level": "INFO"}}
+    conf_dic1 = {"media": [], "log": {"isdelete": False, "isoutput": True, "logpath": "./log", "level": "INFO"}}
     conf_dic1["media"].append(media1)
     conf_dic1["media"].append(media1)
     conf_dic1["media"].append(media1)
@@ -150,7 +150,7 @@ if __name__ == '__main__':
               "decode_data": 2}
     # media2 = {"id": "media2", "url": "rtsp://admin:test0883@192.168.54.53:554/Streaming/Channels/101", "decode": "VPU",
     #           "decode_data": 3}
-    conf_dic2 = {"media": [], "log": {"isdelete": True, "isoutput": True, "logpath": "./log", "level": "INFO"}}
+    conf_dic2 = {"media": [], "log": {"isdelete": False, "isoutput": True, "logpath": "./log", "level": "INFO"}}
     conf_dic2["media"].append(media1)
     # conf_dic2["media"].append(media2)
 
@@ -158,7 +158,7 @@ if __name__ == '__main__':
               "decode_data": 2}
     # media4 = {"id": "media4", "url": "rtsp://admin:test0883@192.168.54.53:554/Streaming/Channels/101", "decode": "VPU",
     #           "decode_data": 3}
-    conf_dic3 = {"media": [], "log": {"isdelete": True, "isoutput": True, "logpath": "./log", "level": "INFO"}}
+    conf_dic3 = {"media": [], "log": {"isdelete": False, "isoutput": True, "logpath": "./log", "level": "INFO"}}
     # conf_dic3["media"].append(media1)
     conf_dic3["media"].append(media3)
 

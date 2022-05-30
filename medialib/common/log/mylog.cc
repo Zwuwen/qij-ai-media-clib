@@ -32,6 +32,7 @@ void cmylog::write_log(char* logmsg)
         int fd = open((const char*)g_log_file.c_str(),O_RDWR|O_APPEND|O_CREAT,0664);
         if(fd < 0)
         {
+            std::cout<<"WRITE_LOG　ERROR:"<<g_log_file<<" "<<fd<<std::endl;
             return;
         }
         write(fd,logmsg,strlen(logmsg) +1);
