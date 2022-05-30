@@ -1,7 +1,6 @@
 #include "vpu_decode.h"
 #include "yuv.h"
 #include "init_data.h"
-
 #ifdef VPUMEDIA
 
 std::timed_mutex cvpu_decode::vpu_lock;
@@ -101,6 +100,7 @@ UINT32 cvpu_decode::data() {
     mpp_packet_set_size(packet, size);
     mpp_packet_set_pos(packet, buf);
     mpp_packet_set_length(packet, size);
+    mpp_packet_set_dts(packet, m_ffmpeg_param->m_pkt.dts);
     this->m_cv.notify_all();
 
     return QJ_BOX_OP_CODE_SUCESS;
@@ -189,12 +189,14 @@ void cvpu_decode::decode_func(void *in_this) {
                 RK_U32 ver_stride = mpp_frame_get_ver_stride(param->m_frame);
                 RK_U8 *base = (RK_U8 *) mpp_buffer_get_ptr(buffer);
                 MppFrameFormat fmt = mpp_frame_get_fmt(param->m_frame);
+                RK_S64 dts = mpp_frame_get_dts(param->m_frame);
                 if(fmt){};
                 UINT32 yuv420p_size = cyuv::yuv420sp2yuv420p(base, buf_size, vpu_decode->m_yuv420p,
                                                              sizeof(vpu_decode->m_yuv420p),
                                                              width, height, hor_stride, ver_stride);
                 memset(decode_info, 0x00, sizeof(decode_data_st_t));
-                printf("vpu_decode->m_shared_cache_type = %d\n", vpu_decode->m_shared_cache_type);
+                std::cout<<"DTS:"<<dts<<std::endl;
+                cmylog::mylog("INFO","vpu_decode->m_shared_cache_type = %d\n", vpu_decode->m_shared_cache_type);
                 if (vpu_decode->m_shared_cache_type & DECODE_DATA_JPG) {
                     cjpg jpg;
                     jpg.init_conv_param(width, height);
@@ -212,16 +214,17 @@ void cvpu_decode::decode_func(void *in_this) {
                      fclose(fp);
 #endif
                     jpg.release_jpeg_mem();
-                    std::cout << "jpg data len:" << decode_info->m_jpg_buf_len << std::endl;
+//                    std::cout << "jpg data len:" << decode_info->m_jpg_buf_len << std::endl;
                 }
                 if (vpu_decode->m_shared_cache_type & DECODE_DATA_YUV420P) {
                     memcpy(decode_info->m_yuv_buf, vpu_decode->m_yuv420p, yuv420p_size);
                     decode_info->m_yuv_buf_len = yuv420p_size;
-                    std::cout << "yuv data len:" << decode_info->m_yuv_buf_len << std::endl;
+//                    std::cout << "yuv data len:" << decode_info->m_yuv_buf_len << std::endl;
                 }
 
                 decode_info->m_width = width;
                 decode_info->m_height = height;
+                decode_info->dts=dts;
                 if (QJ_BOX_OP_CODE_SUCESS !=
                     vpu_decode->m_shared_cache->put((UINT8 *) decode_info, sizeof(decode_data_st_t))) {
                     cmylog::mylog("ERR", "put data failed  \n");

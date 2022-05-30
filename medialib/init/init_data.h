@@ -84,19 +84,20 @@ typedef struct decode_data_st
 {
     decode_data_st()
     {
-        memset(m_yuv_buf,0x00,sizeof(m_yuv_buf));
+//        memset(m_yuv_buf,0x00,sizeof(m_yuv_buf));
         m_yuv_buf_len = 0;
-        memset(m_jpg_buf,0x00,sizeof(m_yuv_buf));
+//        memset(m_jpg_buf,0x00,sizeof(m_yuv_buf));
         m_jpg_buf_len = 0;
         m_width = 0;
         m_height = 0;
     }
     int m_yuv_buf_len;
     int m_jpg_buf_len;
-    char m_yuv_buf[1920*1080*3]{};
-    char m_jpg_buf[1920*1080*3]{};
+    uint8_t m_yuv_buf[1920*1080*3]{};
+    uint8_t m_jpg_buf[1920*1080*3]{};
     int m_width;
     int m_height;
+    long long dts{};
 }decode_data_st_t;
 
 #endif // __INIT_DATA_H__

@@ -24,12 +24,13 @@ class DecodeData(Structure):
         ('yuv_buf', c_uint8 * (1920 * 1080 * 3)),
         ('jpg_buf', c_uint8 * (1920 * 1080 * 3)),
         ('width', c_int),
-        ('height', c_int)
+        ('height', c_int),
+        ('dts', c_longlong)
     ]
 
     def __str__(self):
         result = f'yuv_len:{self.yuv_len},jpg_len:{self.jpg_len},width:{self.width},height:{self.height},'
-        result += f'yuv_buf(len):{len(self.yuv_buf)},jpg_buf(len):{len(self.jpg_buf)}'
+        result += f'yuv_buf(len):{len(self.yuv_buf)},jpg_buf(len):{len(self.jpg_buf)},dts:{self.dts}'
         return result
 
 
@@ -37,6 +38,7 @@ class MediaFunc:
     media_lib = cdll.LoadLibrary("/usr/lib/libqjmedia.so")
     handle = None
     count = 0
+    dts_map = dict()
 
     @staticmethod
     def get_version():
@@ -85,17 +87,23 @@ class MediaFunc:
         decode_data = DecodeData()
         # buf_type = 2
         ret = MediaFunc.media_lib.get_media_by_id(MediaFunc.handle, media_id, buf_type, byref(decode_data))
-        print(decode_data)
+        # print(decode_data)
         # 写文件
         if ret < 0:
             return
+
+        # dts = decode_data.dts
         width = decode_data.width
         height = decode_data.height
         yuv_buf = decode_data.yuv_buf
         yuv_size = decode_data.yuv_len
         jpg_buf = decode_data.jpg_buf
         jpg_size = decode_data.jpg_len
-
+        if media_id in MediaFunc.dts_map:
+            if MediaFunc.dts_map[media_id] == decode_data.dts:
+                print(f'old frame')
+                return
+        MediaFunc.dts_map[media_id] = decode_data.dts
         if yuv_size:
             print("yuv image size:", yuv_size)
             # path = "jpg/" + str(MediaFunc.count) + "-" + media_id.decode() + ".yuv"
@@ -162,37 +170,37 @@ if __name__ == '__main__':
     while True:
         # MediaFunc.get_media_by_id(b"media1")
         # time.sleep(1)
-        print(f"get midia")
+        # print(f"get midia")
         MediaFunc.get_media_by_id(b"media1", 1)
-        # time.sleep(1)
+        time.sleep(1)
 
-        if media3_is_use:
-            print(f"add midia:{conf_dic3}")
-            media_configure_str = json.dumps(conf_dic3)
-            result = MediaFunc.add_media_by_handle(media_configure_str.encode())
-            print(f"add midia result:{result}")
-
-            if result == 0:
-                result = MediaFunc.start_sample_media(b"media3")
-                # time.sleep(5)
-                print(f'start media3:{result}')
-
-            print(f"get midia3")
-            result = MediaFunc.get_media_by_id(b"media3", 2)
-            if result: count += 1
-
-        if count == 1000:
-            result = MediaFunc.remove_media_by_handle(b"media3")
-            print(f"remove media3 result:{result}")
-            if result==0: print(f"remove media3{'😂' * 8}")
-            media3_is_use = False
-            count_media3_add += 1
-
-        if count_media3_add == 1000:
-            print(f'reuse media3{"🚕"*8}')
-            count_media3_add = 0
-            count = 0
-            media3_is_use = True
+        # if media3_is_use:
+        #     # print(f"add midia:{conf_dic3}")
+        #     media_configure_str = json.dumps(conf_dic3)
+        #     result = MediaFunc.add_media_by_handle(media_configure_str.encode())
+        #     # print(f"add midia result:{result}")
+        #
+        #     if result == 0:
+        #         result = MediaFunc.start_sample_media(b"media3")
+        #         # time.sleep(5)
+        #         print(f'start media3:{result}')
+        #
+        #     # print(f"get midia3")
+        #     result = MediaFunc.get_media_by_id(b"media3", 2)
+        #     if result: count += 1
+        #
+        # if count == 1000:
+        #     result = MediaFunc.remove_media_by_handle(b"media3")
+        #     # print(f"remove media3 result:{result}")
+        #     if result == 0: print(f"remove media3{'😂' * 8}")
+        #     media3_is_use = False
+        #     count_media3_add += 1
+        #
+        # if count_media3_add == 1000:
+        #     print(f'reuse media3{"🚕" * 8}')
+        #     count_media3_add = 0
+        #     count = 0
+        #     media3_is_use = True
         # time.sleep(1)
         # MediaFunc.get_media_by_id(b"media2", 2)
         # time.sleep(1)
