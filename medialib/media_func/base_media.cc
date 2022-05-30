@@ -224,8 +224,8 @@ OPEN:
     for(uint32_t i = 0;i<param->m_input_ctx->nb_streams;++i)
     {
         /*new version use this*/
-//        if(param->m_input_ctx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO)
-        if(param->m_input_ctx->streams[i]->codec->codec_type == AVMEDIA_TYPE_VIDEO)
+        if(param->m_input_ctx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO)
+//        if(param->m_input_ctx->streams[i]->codec->codec_type == AVMEDIA_TYPE_VIDEO)
         {
             video_index = i;
             break;

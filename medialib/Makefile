@@ -12,8 +12,8 @@ endif
 
 #FLAGS= -Wall -O2 -MD -shared -std=c++11 -U_FORTIFY_SOURCE -g
 #FLAGS := -Wall -O2 -MD -shared -fPIC -std=c++11 -U_FORTIFY_SOURCE  -fpermissive
-#FLAGS := -Wall -O0 -MD -shared -fPIC -std=c++11 -U_FORTIFY_SOURCE  -fpermissive
 FLAGS := -Wall -O0 -MD -shared -fPIC -std=c++14 -U_FORTIFY_SOURCE  -fpermissive
+#FLAGS  += -g -fsanitize=address -fno-omit-frame-pointer
 
 MEDIAARCH := vpu
 ifeq ($(MEDIAARCH),cpu)
@@ -27,10 +27,9 @@ PWD=$(shell pwd)
 
 #####h.cc#####
 ifeq ($(ARCH),arm)
-#SYS_INC := -I /usr/local/aarch64/ffmpeg/include 
+#SYS_INC := -I /usr/local/aarch64/ffmpeg/include
 SYS_INC := -I /usr/local/aarch64/jpeg-8d/include
 SYS_INC += -I /usr/local/aarch64/sysroot/usr/include
-#SYS_INC += -I /home/dev/data/wrm/host/aarch64-buildroot-linux-gnu/sysroot/usr/include
 SYS_INC += -I /usr/local/aarch64/jsoncpp/include
 #SYS_INC += -I /usr/local/aarch64/hiredis/include
 
@@ -42,13 +41,7 @@ SYS_INC += -I /usr/local/include
 SYS_INC += -I /usr/local/include/hiredis
 endif
 ifeq ($(MEDIAARCH),vpu)
-#SYS_INC += -I/usr/local/aarch64/mpp/inc
-SYS_INC += -I/home/dev/data/wrm/host1/mpp-release/inc
-SYS_INC += -I/home/dev/data/wrm/host1/mpp-release/mpp/inc
-SYS_INC += -I/home/dev/data/wrm/host1/mpp-release/osal/inc/
-SYS_INC += -I/home/dev/data/wrm/host1/mpp-release/utils/
-SYS_INC += -I/home/dev/data/wrm/host1/mpp-release/mpp/base/inc/
-SYS_INC += -I/home/dev/data/wrm/host1/mpp-release/mpp/codec/inc/
+SYS_INC += -I/usr/local/aarch64/mpp/inc
 endif
 
 USER_INC := -I ./common
@@ -86,7 +79,6 @@ TARGET_O := $(foreach src,$(SRC), $(patsubst %cc,%o,$(src)) )
 
 ifeq ($(ARCH),arm)
 LIB = -L/usr/local/aarch64/sysroot/lib -L/usr/local/aarch64/sysroot/usr/lib -lpthread -lm -lavcodec -lswscale -lavutil -lavdevice -lavfilter -lavformat
-#LIB = -L/home/dev/data/wrm/host1/aarch64-buildroot-linux-gnu/sysroot/lib -L/home/dev/data/wrm/host/aarch64-buildroot-linux-gnu/sysroot/usr/lib -lpthread -lm -lavcodec -lswscale -lavutil -lavdevice -lavfilter -lavformat
 LIB += -L/usr/local/aarch64/jpeg-8d/lib -ljpeg
 LIB += -L/usr/local/aarch64/jsoncpp/lib -ljsoncpp
 #LIB += -L/usr/local/aarch64/hiredis/lib -lhiredis
@@ -99,9 +91,7 @@ LIB += -L/usr/local/ffmpeg/lib -lavcodec -lswscale -lavutil -lavdevice -lavfilte
 LIB += -L/usr/local/libjpeg/lib -ljpeg	-L/usr/local/lib -lhiredis -luv
 endif
 ifeq ($(MEDIAARCH),vpu)
-#LIB += -L/usr/local/aarch64/mpp/lib -lrockchip_vpu -lrockchip_mpp
-LIB += -L/home/dev/data/wrm/host1/mpp-release/mpp/ -lrockchip_mpp
-LIB += -L/home/dev/data/wrm/host1/mpp-release/mpp/legacy/ -lrockchip_vpu
+LIB += -L/usr/local/aarch64/mpp/lib -lrockchip_vpu -lrockchip_mpp
 
 endif
 
