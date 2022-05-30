@@ -11,12 +11,12 @@ class cvpu_decode : public cbase_decode
 {
 public:
     cvpu_decode();
-    ~cvpu_decode();
+    ~cvpu_decode() override;
 public:
-    void init(void* param);
+    void init(void* param) override;
     void deinit() override;
-    UINT32 data();
-    UINT32 ctrl(std::string data);
+    UINT32 data() override;
+    UINT32 ctrl(std::string data) override;
     bool is_run()override;
 public:
 

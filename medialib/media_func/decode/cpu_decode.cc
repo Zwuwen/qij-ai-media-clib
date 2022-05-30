@@ -1,13 +1,9 @@
 #include "cpu_decode.h"
 
 ccpu_decode::ccpu_decode()
-{
-    
-}
+= default;
 ccpu_decode::~ccpu_decode()
-{
-    
-}
+= default;
 
 void ccpu_decode::init(void* param)
 {
@@ -16,10 +12,10 @@ void ccpu_decode::init(void* param)
 }
 void ccpu_decode::deinit()
 {
-     if(m_shared_cache != NULL)
+     if(m_shared_cache != nullptr)
     {
         delete m_shared_cache;
-        m_shared_cache = NULL;
+        m_shared_cache = nullptr;
     }
 }
 
@@ -97,7 +93,7 @@ UINT32 ccpu_decode::ctrl(std::string data)
 {
     //查找解码器,获取video 索引
     int video_index = atoi((const char*)data.c_str());
-    
+
     m_param->m_avcodec_params = m_param->m_input_ctx->streams[video_index]->codecpar;
     m_param->m_avcodec = avcodec_find_decoder(m_param->m_avcodec_params->codec_id);
     if(m_param->m_avcodec == NULL)

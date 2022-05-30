@@ -11,16 +11,16 @@ cvpu_decode::cvpu_decode() {
 }
 
 cvpu_decode::~cvpu_decode() {
-    if (m_yuv420p != NULL) {
+    if (m_yuv420p != nullptr) {
         delete[] this->m_yuv420p;
-        this->m_yuv420p = NULL;
+        this->m_yuv420p = nullptr;
     }
 }
 
 void cvpu_decode::init(void *param) {
     m_ffmpeg_param = (ffmpeg_pull_flow_param_t *) param;
     m_param = &m_ffmpeg_param->m_rk1808_param;
-    m_decode_func_thread = NULL;
+    m_decode_func_thread = nullptr;
     m_running = false;
     m_pkt_done = false;
 
@@ -33,7 +33,7 @@ void cvpu_decode::deinit() {
             m_running = false;
             m_decode_func_thread->join();
             delete m_decode_func_thread;
-            m_decode_func_thread = NULL;
+            m_decode_func_thread = nullptr;
         }
     }
     if (m_shared_cache != nullptr) {
@@ -109,7 +109,7 @@ UINT32 cvpu_decode::data() {
 void cvpu_decode::decode_func(void *in_this) {
     rk1808_flow_param_t *param = ((cvpu_decode *) in_this)->m_param;
     bool *running = &((cvpu_decode *) in_this)->m_running;
-    cvpu_decode *vpu_decode = (cvpu_decode *) in_this;
+    auto *vpu_decode = (cvpu_decode *) in_this;
     decode_data_st_t *decode_info = vpu_decode->m_decode_info;
     while (*running) {
         //等待媒体数据
@@ -246,7 +246,7 @@ void cvpu_decode::decode_func(void *in_this) {
 UINT32 cvpu_decode::ctrl(std::string data) {
     size_t packet_size = DUMMY_SINK_RECEIVE_BUFFER_SIZE;//DUMMY_SINK_RECEIVE_BUFFER_SIZE;//MPI_DEC_STREAM_SIZE
     m_param->m_buffer = mpp_malloc(char, packet_size);
-    if (NULL == m_param->m_buffer) {
+    if (nullptr == m_param->m_buffer) {
         cmylog::mylog("ERR", "npu malloc resource failure\n");
         return QJ_BOX_OP_CODE_NOENOUGHSPACE;
     }

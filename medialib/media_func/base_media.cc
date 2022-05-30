@@ -13,19 +13,19 @@ cbase_media::~cbase_media()
 
 UINT32 cbase_media::init_resource(vector<media_conf_t>& media_conf_list)
 {
-    if(media_conf_list.size() <= 0)
+    if(media_conf_list.empty())
     {
         cmylog::mylog("WAR","media configure list size <=0\n");
         return QJ_BOX_OP_CODE_INPUTPARAMERR;
     }
     //资源列表初始化
-    for(auto it = media_conf_list.begin() ; it != media_conf_list.end() ; ++it)
+    for(auto & it : media_conf_list)
     {
         //流配置初始化
-        cmylog::mylog("INFO","media configure id=%s\n",it->m_id.c_str());
-        this->m_media_conf_list.push_back(*it);
+        cmylog::mylog("INFO","media configure id=%s\n",it.m_id.c_str());
+        this->m_media_conf_list.push_back(it);
         ffmpeg_pull_flow_param_t ffmpeg_pull_obj;
-        ffmpeg_pull_obj.m_id = it->m_id;
+        ffmpeg_pull_obj.m_id = it.m_id;
         this->m_pull_flow_param_list.push_back(ffmpeg_pull_obj);
     }
     avformat_network_init();
@@ -35,21 +35,6 @@ UINT32 cbase_media::init_resource(vector<media_conf_t>& media_conf_list)
 
  void cbase_media::reset_sample_resource(media_conf_t& media_conf)
  {
-//    for(int i = 0 ; i < this->m_media_conf_list.size();++i)
-//    {
-//        if(m_media_conf_list[i].m_id != media_conf.m_id)
-//            continue;
-//        m_media_conf_list[i] = media_conf;
-//
-//        for(auto & it : this->m_pull_flow_param_list)
-//        {
-//            if(it.m_id != media_conf.m_id)
-//                continue;
-//            stop_pull_media_task(it.m_id);
-//            start_pull_media_task(it.m_id);
-//        }
-//    }
-//     for(int i = 0 ; i < this->m_media_conf_list.size();++i)
     for (auto &conf:m_media_conf_list)
      {
          if(conf.m_id != media_conf.m_id) continue;
@@ -68,21 +53,10 @@ void cbase_media::destory_resource()
 {
     m_pull_flow_param_list.clear() ;
     m_media_conf_list.clear();
-
-//    while(!this->m_pull_flow_param_list.empty())
-//    {
-//        this->m_pull_flow_param_list.pop_back();
-//    }
-////    vector<ffmpeg_pull_flow_param_t>().swap(this->m_pull_flow_param_list);
-//    while(!this->m_media_conf_list.empty())
-//    {
-//        this->m_media_conf_list.pop_back();
-//    }
-//    vector<media_conf_t>().swap(this->m_media_conf_list);
     avformat_network_deinit();
 }
 
-UINT32 cbase_media::start_pull_media_task(std::string media_flow_id)
+UINT32 cbase_media::start_pull_media_task(const std::string& media_flow_id)
 {
     if(this->m_media_conf_list.empty())
     {
@@ -119,23 +93,23 @@ UINT32 cbase_media::start_pull_media_task(std::string media_flow_id)
 }
 UINT32 cbase_media::start_all_pull_media_task()
 {
-    if(this->m_media_conf_list.size() <= 0)
+    if(this->m_media_conf_list.empty())
     {
         cmylog::mylog("WAR","media configure list size <=0\n");
         return QJ_BOX_OP_CODE_INPUTPARAMERR;
     }
     try{
         //启动拉流解码线程
-        for(auto it = this->m_media_conf_list.begin() ; it != this->m_media_conf_list.end(); ++it)
+        for(auto & it : this->m_media_conf_list)
         {
-            for(auto pull_it = this->m_pull_flow_param_list.begin() ; pull_it != this->m_pull_flow_param_list.end(); ++pull_it)
+            for(auto & pull_it : this->m_pull_flow_param_list)
             {
-                if(pull_it->m_id == it->m_id)
+                if(pull_it.m_id == it.m_id)
                 {
-                    cmylog::mylog("INFO","media handler thread begin,id=%s\n",pull_it->m_id.c_str());
-                    pull_it->m_thread = new std::thread([this,pull_it,it]()mutable{
+                    cmylog::mylog("INFO","media handler thread begin,id=%s\n",pull_it.m_id.c_str());
+                    pull_it.m_thread = new std::thread([this,&pull_it,&it]()mutable{
 //                    pull_it->m_is_running = true;
-                    cbase_media::pull_flow_thread((void*)this,*pull_it,*it);
+                    cbase_media::pull_flow_thread((void*)this,pull_it,it);
                     });
                     break;
                 }
@@ -190,7 +164,7 @@ void cbase_media::pull_flow_thread_for_decode(void* p_this, ffmpeg_pull_flow_par
     cmylog::mylog("INFO","pull flow begin,id=%s\n",pconf->m_id.c_str());
 
     /**
-     * 处始化解码器
+     * 处始化解码器 暂时不兼容cpu decoder
      */
     decode->init((void*)param);
     cmylog::mylog("INFO","decode initialization complete,url=%s\n",pconf->m_url.c_str());
@@ -244,7 +218,6 @@ OPEN:
         /* retry always  */
         sleep(5);
         goto OPEN;
-//        goto End;
     }
     //匹配视频流的index
     video_index = -1;
@@ -342,33 +315,33 @@ void cbase_media::stop_pull_media_task(std::string media_flow_id)
 }
 void cbase_media::stop_all_pull_media_task()
 {
-    for(auto pull_it = this->m_pull_flow_param_list.begin() ; pull_it != this->m_pull_flow_param_list.end(); ++pull_it)
+    for(auto & pull_it : this->m_pull_flow_param_list)
     {
-       if(pull_it->m_is_running){
-           pull_it->m_is_running = false;
-           pull_it->m_thread->join();
-           delete pull_it->m_thread;
-           pull_it->m_thread = nullptr;
+       if(pull_it.m_is_running){
+           pull_it.m_is_running = false;
+           pull_it.m_thread->join();
+           delete pull_it.m_thread;
+           pull_it.m_thread = nullptr;
        }
     }
 }
 
 void cbase_media::clean_pull_resource(std::string media_flow_id)
 {
-     for(auto pull_it = this->m_pull_flow_param_list.begin() ; pull_it != this->m_pull_flow_param_list.end(); ++pull_it)
+     for(auto & pull_it : this->m_pull_flow_param_list)
      {
-         if(pull_it->m_id == media_flow_id)
+         if(pull_it.m_id == media_flow_id)
          {
-             this->clean(*pull_it);
+             this->clean(pull_it);
              break;
          }
      }
 }
 void cbase_media::clean_all_pull_resource()
 {
-     for(auto pull_it = this->m_pull_flow_param_list.begin() ; pull_it != this->m_pull_flow_param_list.end(); ++pull_it)
+     for(auto & pull_it : this->m_pull_flow_param_list)
      {
-        this->clean(*pull_it);
+        this->clean(pull_it);
      }
 }
 

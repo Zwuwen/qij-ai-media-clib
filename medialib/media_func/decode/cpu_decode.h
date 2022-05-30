@@ -9,16 +9,16 @@ class ccpu_decode : public cbase_decode
 {
 public:
     ccpu_decode();
-    ~ccpu_decode();
+    ~ccpu_decode() override;
 public:
-    void init(void* param);
-    void deinit();
-    UINT32 data();
-    UINT32 ctrl(std::string data);
+    void init(void* param) override;
+    void deinit() override;
+    UINT32 data() override;
+    UINT32 ctrl(std::string data) override;
 #pragma mark -新增
     bool is_run() override;
 public:
-    ffmpeg_pull_flow_param_t* m_param;
+    ffmpeg_pull_flow_param_t* m_param{};
 };
 
 

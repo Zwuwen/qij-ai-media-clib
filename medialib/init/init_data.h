@@ -42,7 +42,7 @@ typedef struct _log_info
 #define DECODE_DATA_YUV420P                            0x01 
 #define DECODE_DATA_JPG                                      0x02
 #define DECODE_DATA_YUVJPG                              0x0f
-typedef struct _media_conf
+typedef struct media_conf
 {
     std::string m_id;
     std::string m_url;
@@ -53,7 +53,7 @@ typedef struct _media_conf
     std::string m_unlink_timeout;
     std::string m_decode_type;      //解码类型
     UINT8 m_decode_data_type;     //jpg,yuv
-    _media_conf()
+    media_conf()
     {
         this->m_id = "";
         this->m_url = "";
@@ -65,7 +65,7 @@ typedef struct _media_conf
         this->m_decode_type = CPU_DECODE_TYPE;
         this->m_decode_data_type = DECODE_DATA_YUVJPG;
     }
-    struct _media_conf& operator=(const struct _media_conf& conf)
+    struct media_conf& operator=(const struct media_conf& conf)
     {
         this->m_id = conf.m_id; 
         this->m_url = conf.m_url;
@@ -80,9 +80,9 @@ typedef struct _media_conf
     }
 }media_conf_t,*pmedia_conf_t;
 
-typedef struct _decode_data_st
+typedef struct decode_data_st
 {
-    _decode_data_st()
+    decode_data_st()
     {
         memset(m_yuv_buf,0x00,sizeof(m_yuv_buf));
         m_yuv_buf_len = 0;
@@ -93,8 +93,8 @@ typedef struct _decode_data_st
     }
     int m_yuv_buf_len;
     int m_jpg_buf_len;
-    char m_yuv_buf[1920*1080*3];
-    char m_jpg_buf[1920*1080*3];
+    char m_yuv_buf[1920*1080*3]{};
+    char m_jpg_buf[1920*1080*3]{};
     int m_width;
     int m_height;
 }decode_data_st_t;

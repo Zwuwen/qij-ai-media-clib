@@ -3,7 +3,7 @@
 
 UINT32 cconfig::load_conf(char* file,config_info& conf)
 {
-    if(file == NULL || !is_file_exist((const char*)file))
+    if(file == nullptr || !is_file_exist((const char*)file))
     {
         printf("INFO:config file isnot exist\n");
         return QJ_BOX_OP_CODE_INPUTPARAMERR;

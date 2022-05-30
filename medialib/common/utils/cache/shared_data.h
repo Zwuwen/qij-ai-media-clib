@@ -7,7 +7,7 @@ class cshared_sample_cache
 public:
     cshared_sample_cache(UINT32 size);
     ~cshared_sample_cache();
-    UINT32 get_cache_size();
+    UINT32 get_cache_size() const;
     UINT32 put(UINT8* data,UINT32 size);
     /*
         size:欲读取字节数，

@@ -16,22 +16,22 @@ cshared_sample_cache::cshared_sample_cache(UINT32 size)
 }
 cshared_sample_cache::~cshared_sample_cache()
 {
-    if(this->m_data != NULL)
+    if(this->m_data != nullptr)
     {
         delete[] this->m_data;
-        this->m_data = NULL;
+        this->m_data = nullptr;
         this->m_data_len = 0;
     }
 }
 
-UINT32 cshared_sample_cache::get_cache_size()
+UINT32 cshared_sample_cache::get_cache_size() const
 {
     return this->m_data_len;
 }
 UINT32 cshared_sample_cache::put(UINT8* data,UINT32 size)
 {
     unique_lock<mutex> ql(this->m_mtx); 
-    if(data == NULL || size == 0 || size > this->m_data_len)
+    if(data == nullptr || size == 0 || size > this->m_data_len)
     {
         return QJ_BOX_OP_CODE_INPUTPARAMERR;
     }

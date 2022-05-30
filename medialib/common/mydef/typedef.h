@@ -16,7 +16,7 @@ typedef bool BOOL;
 #define FALSE false
 
 //条件变量数据结构定义
-typedef struct _CONDITION_VARIALBE
+typedef struct CONDITION_VARIALBE
 {
     std::mutex m_mtx;   //锁
     std::condition_variable m_cv;   //条件变量
@@ -43,28 +43,28 @@ typedef struct _CONDITION_VARIALBE
 }CONDITION_VARIALBE_t;
 
 //线程模块数据结构定义
-typedef struct _THREAD_MOD
+typedef struct THREAD_MOD
 {
     typedef void (*FUNC)(void* param);
     std::thread* m_monitor_thread;
     bool m_running;
     FUNC m_func;
     void* m_param;
-    _THREAD_MOD(FUNC func,void* param)
+    THREAD_MOD(FUNC func,void* param)
     {
         this->m_running = false;
-        this->m_monitor_thread = NULL;
+        this->m_monitor_thread = nullptr;
         this->m_func = func;
         this->m_param = param;
     }
-    ~_THREAD_MOD()
+    ~THREAD_MOD()
     {
-        if(this->m_monitor_thread != NULL)
+        if(this->m_monitor_thread != nullptr)
         {
             this->m_running = false;
             this->m_monitor_thread->join();
             delete this->m_monitor_thread;
-            this->m_monitor_thread = NULL;
+            this->m_monitor_thread = nullptr;
         }
     }
     void start()
@@ -79,12 +79,12 @@ typedef struct _THREAD_MOD
     }
     void join()
     {
-        while(this->m_monitor_thread != NULL)
+        while(this->m_monitor_thread != nullptr)
         {
             this->m_running = false;
             this->m_monitor_thread->join();
             delete this->m_monitor_thread;
-            this->m_monitor_thread = NULL;
+            this->m_monitor_thread = nullptr;
             break;
         }
     }

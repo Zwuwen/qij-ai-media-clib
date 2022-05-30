@@ -18,7 +18,7 @@ public:
 public:
     /*对外接口*/
     UINT32 init_resource(vector<media_conf_t>& media_conf_list);
-    UINT32 start_pull_media_task(std::string media_flow_id);
+    UINT32 start_pull_media_task(const std::string& media_flow_id);
     UINT32 start_all_pull_media_task();
     void stop_pull_media_task(std::string media_flow_id);
     void stop_all_pull_media_task();
@@ -38,16 +38,10 @@ public:
     void clean_all_pull_resource();
     void clean(ffmpeg_pull_flow_param_t& pull_param);
 private:
-//    //拉流参数
-//    std::vector<ffmpeg_pull_flow_param_t> m_pull_flow_param_list;
-//    //流配置信息
-//    std::vector<media_conf_t> m_media_conf_list;
     //拉流参数
     std::list<ffmpeg_pull_flow_param_t> m_pull_flow_param_list;
     //流配置信息
     std::list<media_conf_t> m_media_conf_list;
-//public:
-//    std::map<std::string,std::string> m_redis_info;
 };
 
 #endif

@@ -1,14 +1,12 @@
 #include "jpg.h"
 
 cjpg:: cjpg()
-{
-}
+= default;
 cjpg:: ~cjpg()
-{
-}
+= default;
 void cjpg::init_conv_param(UINT32 width,UINT32 height)
 {
-    this->m_compress_buff = NULL;
+    this->m_compress_buff = nullptr;
     this->m_compress_buff_size = 0;
     memset(this->m_yuvbuf,0x00,sizeof(this->m_yuvbuf));
     this->m_cinfo.err = jpeg_std_error(&this->m_jerr);
@@ -41,7 +39,7 @@ void cjpg::release_jpeg_mem()
 
 bool cjpg::yuv2jpg(UINT8* yuv)
 {
-    if(yuv == NULL)
+    if(yuv == nullptr)
     {
         return false;
     }
