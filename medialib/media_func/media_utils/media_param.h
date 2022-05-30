@@ -51,7 +51,7 @@ typedef struct rk1808_flow_param
         this->m_param      = NULL;
         this->m_need_split   = 1;
         this->m_mpi_cmd = MPP_CMD_BASE;
-        this->m_timeout = 5000;
+        this->m_timeout = MPP_POLL_MAX;
     }
     char* m_buffer;
     MppPacket m_packet{};

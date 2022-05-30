@@ -21,7 +21,7 @@ public:
     cshared_sample_cache* m_shared_cache;
     decode_data_st_t* m_decode_info;
     UINT8 m_shared_cache_type;
-	#pragma mark -新增
+//	#pragma mark -新增
     virtual bool is_run()=0;
 };
 

@@ -195,7 +195,7 @@ Begin:
     param->m_input_ctx = avformat_alloc_context();
 
 OPEN:
-    while (TRUE){
+    while (true){
         ret_value = avformat_open_input(&param->m_input_ctx, (char*)pconf->m_url.c_str(), NULL, &param->m_opts);
         if(ret_value < 0)
         {
@@ -221,7 +221,7 @@ OPEN:
     }
     //匹配视频流的index
     video_index = -1;
-    for(int i = 0;i<param->m_input_ctx->nb_streams;++i)
+    for(uint32_t i = 0;i<param->m_input_ctx->nb_streams;++i)
     {
         /*new version use this*/
 //        if(param->m_input_ctx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO)
@@ -257,7 +257,7 @@ OPEN:
     {
         if (duration_cast<seconds>(steady_clock::now() - start_time).count() > atoi(pconf->m_unlink_timeout.c_str())) {
             cmylog::mylog("WAR", "av_read_frame() timeout,url=%s\n", pconf->m_url.c_str());
-#pragma mark - 断网时没有释放vpu相关资源 begin 会重新init
+//#pragma mark - 断网时没有释放vpu相关资源 begin 会重新init
             in_this->clean_pull_resource(pconf->m_id);
 	        start_time = steady_clock::now();
             goto Begin;
@@ -400,7 +400,7 @@ UINT32 cbase_media::get_media_by_id(const char* media_id,int media_type,uint8_t 
             {
                 return 0;
             } 
-#pragma mark -新增
+//#pragma mark -新增
              if(it.m_decode != nullptr)
             {
                 if(!it.m_decode->is_run()){
@@ -413,7 +413,7 @@ UINT32 cbase_media::get_media_by_id(const char* media_id,int media_type,uint8_t 
      }
      return 0;
 }
-#pragma mark - 以下为新增
+//#pragma mark - 以下为新增
 std::list<media_conf_t> &cbase_media::get_media_conf() {
     return m_media_conf_list;
 }

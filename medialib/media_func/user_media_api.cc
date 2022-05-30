@@ -5,7 +5,7 @@
 #include "base_media.h"
 #include "algorithm"
 
-char *version() {
+const char *version() {
     return "7g_media_version_1.0.0";
 }
 
@@ -33,7 +33,7 @@ MEDIA_HANDLE init_media_qjapi(char *media_conf) {
             if (media_obj.size() == 0) {
                 return nullptr;
             }
-            for (auto i = 0; i < media_obj.size(); i++) {
+            for (uint32_t i = 0; i < media_obj.size(); i++) {
                 media_conf_t conf;
                 conf.m_id = media_obj[i]["id"].asString();
                 conf.m_url = media_obj[i]["url"].asString();
@@ -141,7 +141,7 @@ int reset_media_conf_by_id(MEDIA_HANDLE handle, char *media_conf) {
     try {
         if (reader.parse(media_conf, root)) {
             const Json::Value media_obj = root["media"];
-            for (auto i = 0; i < media_obj.size(); i++) {
+            for (uint32_t i = 0; i < media_obj.size(); i++) {
                 media_conf_t conf;
                 conf.m_id = media_obj[i]["id"].asString();
                 conf.m_url = media_obj[i]["url"].asString();
@@ -149,8 +149,8 @@ int reset_media_conf_by_id(MEDIA_HANDLE handle, char *media_conf) {
                 conf.m_decode_data_type = media_obj[i]["decode_data"].asInt();
                 media_conf_list.push_back(conf);
             }
-            for (auto it = media_conf_list.begin(); it != media_conf_list.end(); ++it) {
-                base_media->reset_sample_resource(*it);
+            for (auto & it : media_conf_list) {
+                base_media->reset_sample_resource(it);
             }
             return QJ_BOX_OP_CODE_SUCESS;
         }
@@ -185,7 +185,7 @@ int get_media_by_id(MEDIA_HANDLE handle, char *media_id, int media_type, decode_
     }
 }
 
-#pragma mark - 以下为新增
+//#pragma mark - 以下为新增
 
 /**
  * 解析json
@@ -200,7 +200,7 @@ static bool parse_conf(vector<media_conf_t> &confs, const char *media_conf) {
     try {
         if (reader.parse(media_conf, root)) {
             const Json::Value media_obj = root["media"];
-            for (auto i = 0; i < media_obj.size(); i++) {
+            for (uint32_t i = 0; i < media_obj.size(); i++) {
                 media_conf_t conf;
                 conf.m_id = media_obj[i]["id"].asString();
                 conf.m_url = media_obj[i]["url"].asString();
@@ -217,7 +217,6 @@ static bool parse_conf(vector<media_conf_t> &confs, const char *media_conf) {
     return result;
 
 }
-
 /**
  * 添加媒体资源
  * @param handle

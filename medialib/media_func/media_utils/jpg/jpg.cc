@@ -57,7 +57,7 @@ bool cjpg::yuv2jpg(UINT8* yuv)
     while (this->m_cinfo.next_scanline < this->m_cinfo.image_height) 
     {
         int idx = 0;
-        for (int i = 0; i<width; i++)
+        for (uint32_t i = 0; i<width; i++)
         {
   	        this->m_yuvbuf[idx++] = py[i + j * width];
   	        this->m_yuvbuf[idx++] = pu[(j>>1) * width/2 + (i>>1) ];

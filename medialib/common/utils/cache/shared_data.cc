@@ -49,7 +49,7 @@ UINT32 cshared_sample_cache::get(UINT8* data,UINT32 size)
     {
         return 0; 
     }
-#pragma mark 新增
+//#pragma mark 新增
     if(this->m_data_len==0) return 0;
     if(this->m_data_relen==0) return 0;
 

@@ -44,7 +44,7 @@ void cmylog::write_log(char* logmsg)
     }
 }
 
-void cmylog::mylog(string log_level,char* fmt,... )
+void cmylog::mylog(const string& log_level,const char* fmt,... )
 {
     char buf[2048] = {0};
     memset(buf,0x00,sizeof(buf));

@@ -6,7 +6,7 @@
 #define QJ_MEDIA_API    extern "C"
 #define MEDIA_HANDLE  void*
 
-QJ_MEDIA_API char* version();
+QJ_MEDIA_API const char* version();
 //初始化媒体资源
 /*
     media configure={

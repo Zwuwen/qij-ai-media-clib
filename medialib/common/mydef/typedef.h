@@ -12,8 +12,8 @@ typedef unsigned long long int  UINT64;
 typedef unsigned char*  PCHAR;
 typedef bool BOOL;
 
-#define TRUE true
-#define FALSE false
+//#define TRUE true
+//#define FALSE false
 
 //条件变量数据结构定义
 typedef struct CONDITION_VARIALBE

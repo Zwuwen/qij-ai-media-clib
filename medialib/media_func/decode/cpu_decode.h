@@ -15,7 +15,7 @@ public:
     void deinit() override;
     UINT32 data() override;
     UINT32 ctrl(std::string data) override;
-#pragma mark -新增
+//#pragma mark -新增
     bool is_run() override;
 public:
     ffmpeg_pull_flow_param_t* m_param{};

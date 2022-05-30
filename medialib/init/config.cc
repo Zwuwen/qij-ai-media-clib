@@ -16,14 +16,14 @@ UINT32 cconfig::load_conf(char* file,config_info& conf)
         //解析json配置文件
         Json::Reader reader;
         Json::Value root;
-        if(reader.parse(is,root,FALSE))
+        if(reader.parse(is,root, false))
         {
             config_info info;
             //media json
             if(!root["media"].isNull())
             {
                 const Json::Value media_obj = root["media"]["mediaList"];
-                for(int i=0;i<media_obj.size();i++)
+                for(uint32_t i=0;i<media_obj.size();i++)
                 {
                     /*
                     media_conf conf;

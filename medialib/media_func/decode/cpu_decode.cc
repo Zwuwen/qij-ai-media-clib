@@ -45,6 +45,7 @@ UINT32 ccpu_decode::data()
                 m_param->m_frame->linesize,
                 0, m_param->m_avcodectxt->height,
                 m_param->m_sw_frame->data, m_param->m_sw_frame->linesize);
+    if(retvalue==0){};
     decode_data_st_t* decode_info = m_decode_info;
     memset(decode_info,0x00,sizeof(decode_data_st_t));
     if(m_param->m_avcodectxt->width <= 0)

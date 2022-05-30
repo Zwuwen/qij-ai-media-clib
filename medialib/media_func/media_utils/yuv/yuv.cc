@@ -52,14 +52,14 @@ UINT32 cyuv::yuv420sp2yuv420p(void* src,UINT32 src_len,void* dst,UINT32 dst_len,
     memcpy(p_y,sp_y,out_y_size);
     //cp u
     int j = 0;
-    for(int i = 0 ; i < out_u_or_v_size;i++)
+    for(uint32_t i = 0 ; i < out_u_or_v_size;i++)
     {
         p_u[i] = sp_uv[j];
         j +=2;
     }
     //cp v
     j = 1;
-    for(int i = 0 ; i < out_u_or_v_size;i++)
+    for(uint32_t i = 0 ; i < out_u_or_v_size;i++)
     {
         p_v[i] = sp_uv[j];
         j +=2;

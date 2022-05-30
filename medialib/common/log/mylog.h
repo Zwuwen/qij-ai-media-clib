@@ -11,7 +11,7 @@ public:
     static void init_log(string log,string log_level,BOOL is_delete,BOOL is_output_std);
     static void deinit_log();
     static void write_log(char* logmsg);
-    static void mylog(string log_level,char* fmt,... );
+    static void mylog(const string& log_level,const char* fmt,... );
     static void mylog(string log_level,const char* file,const char* func,UINT32 line,char* fmt,... );
 };
 

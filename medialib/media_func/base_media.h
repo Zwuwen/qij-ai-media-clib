@@ -24,7 +24,7 @@ public:
     void stop_all_pull_media_task();
     void reset_sample_resource(media_conf_t& media_conf);
 
-#pragma mark - 新增
+//#pragma mark - 新增
     std::list<media_conf_t>& get_media_conf();
     int add_resource(vector<media_conf_t>& media_conf_list);
     int remove_resource(const string& media_id);

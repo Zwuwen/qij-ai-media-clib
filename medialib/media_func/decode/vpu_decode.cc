@@ -82,7 +82,7 @@ UINT32 cvpu_decode::data() {
     if (m_pkt_done) {
         return QJ_BOX_OP_CODE_SUCESS;
     }
-    if (m_param->m_data.packet_size < m_ffmpeg_param->m_pkt.size) {
+    if ((unsigned )(m_param->m_data.packet_size) < (unsigned )m_ffmpeg_param->m_pkt.size) {
         cmylog::mylog("INFO", "decode size not enough\n");
         return QJ_BOX_OP_CODE_SUCESS;
     }
@@ -119,7 +119,7 @@ void cvpu_decode::decode_func(void *in_this) {
         if (vpu_decode->m_pkt_done) {
             continue;
         }
-#pragma mark -新增
+//#pragma mark -新增
         /*这里等待获取全局的vpu锁*/
         std::unique_lock<std::timed_mutex> lck(cvpu_decode::vpu_lock, std::defer_lock);
         if (!lck.try_lock_for(std::chrono::milliseconds(2000))) continue;
@@ -155,6 +155,7 @@ void cvpu_decode::decode_func(void *in_this) {
                 RK_U32 hor_stride = mpp_frame_get_hor_stride(param->m_frame);
                 RK_U32 ver_stride = mpp_frame_get_ver_stride(param->m_frame);
                 RK_U32 buf_size = mpp_frame_get_buf_size(param->m_frame);
+                if(width && heigth && hor_stride && ver_stride){};
                 if (param->m_data.frm_grp == NULL) {
                     if (mpp_buffer_group_get_internal(&param->m_data.frm_grp, MPP_BUFFER_TYPE_ION)) {
                         cmylog::mylog("ERR", "get mpp buffer group failed \n");
@@ -188,6 +189,7 @@ void cvpu_decode::decode_func(void *in_this) {
                 RK_U32 ver_stride = mpp_frame_get_ver_stride(param->m_frame);
                 RK_U8 *base = (RK_U8 *) mpp_buffer_get_ptr(buffer);
                 MppFrameFormat fmt = mpp_frame_get_fmt(param->m_frame);
+                if(fmt){};
                 UINT32 yuv420p_size = cyuv::yuv420sp2yuv420p(base, buf_size, vpu_decode->m_yuv420p,
                                                              sizeof(vpu_decode->m_yuv420p),
                                                              width, height, hor_stride, ver_stride);
@@ -304,7 +306,7 @@ UINT32 cvpu_decode::ctrl(std::string data) {
     return QJ_BOX_OP_CODE_SUCESS;
 }
 
-#pragma mark -新增
+//#pragma mark -新增
 
 bool cvpu_decode::is_run() {
     return m_running;
