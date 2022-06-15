@@ -20,7 +20,7 @@ void cvpu_decode::init(void *param) {
     m_ffmpeg_param = (ffmpeg_pull_flow_param_t *) param;
     m_param = &m_ffmpeg_param->m_rk1808_param;
     m_decode_func_thread = nullptr;
-    m_running = false;
+    is_run_ = false;
     m_pkt_done = false;
 
     m_shared_cache = new cshared_sample_cache(12441626);
@@ -28,8 +28,8 @@ void cvpu_decode::init(void *param) {
 
 void cvpu_decode::deinit() {
     if (m_decode_func_thread != nullptr) {
-        if (m_running) {
-            m_running = false;
+        if (is_run_) {
+            is_run_ = false;
             m_decode_func_thread->join();
             delete m_decode_func_thread;
             m_decode_func_thread = nullptr;
@@ -108,7 +108,7 @@ UINT32 cvpu_decode::data() {
 
 void cvpu_decode::decode_func(void *in_this) {
     rk1808_flow_param_t *param = ((cvpu_decode *) in_this)->m_param;
-    bool *running = &((cvpu_decode *) in_this)->m_running;
+    bool *running = &((cvpu_decode *) in_this)->is_run_;
     auto *vpu_decode = (cvpu_decode *) in_this;
     decode_data_st_t *decode_info = vpu_decode->m_decode_info;
     while (*running) {
@@ -300,7 +300,7 @@ UINT32 cvpu_decode::ctrl(std::string data) {
     m_param->m_data.frame_count = 0;
     //m_param->m_data.frame_num = 0;
 
-    this->m_running = true;
+    this->is_run_ = true;
     m_decode_func_thread = new std::thread([this]()mutable {
         cvpu_decode::decode_func(this);
     });
@@ -312,7 +312,7 @@ UINT32 cvpu_decode::ctrl(std::string data) {
 //#pragma mark -新增
 
 bool cvpu_decode::is_run() {
-    return m_running;
+    return is_run_;
 }
 
 #endif

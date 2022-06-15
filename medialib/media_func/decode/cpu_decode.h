@@ -19,6 +19,8 @@ public:
     bool is_run() override;
 public:
     ffmpeg_pull_flow_param_t* m_param{};
+private:
+    bool is_run_= false;
 };
 
 

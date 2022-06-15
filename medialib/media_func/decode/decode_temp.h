@@ -16,7 +16,7 @@
 //    credis_queue m_redis_queue;
 //    std::thread* m_ctrl_thread;
 //    std::thread* m_data_thread;
-//    bool m_running;
+//    bool is_run_;
 //};
 //
 //template<class DECODE>
@@ -24,7 +24,7 @@
 //{
 //    m_ctrl_thread = NULL;
 //    m_data_thread = NULL;
-//    m_running = false;
+//    is_run_ = false;
 //    if(m_redis_queue.init(redis_info) == false)
 //        return false;
 //
@@ -37,10 +37,10 @@
 //template<class DECODE>
 //void cdecode_temp<DECODE>::start()
 //{
-//    this->m_running = true;
+//    this->is_run_ = true;
 //    //listen ctrl msg
 //    this->m_ctrl_thread = new std::thread([this]()mutable{
-//        while(this->m_running)
+//        while(this->is_run_)
 //        {
 //            printf("ctrl subscribe key=%s\n",m_redis_key.m_ctrl_key.c_str());
 //            const char* data = this->m_redis_queue.customer(this->m_redis_key.m_ctrl_key);
@@ -57,7 +57,7 @@
 //    //listen data msg
 //    this->m_data_thread = new std::thread([this]()mutable{
 //        printf("data customer key=%s\n",m_redis_key.m_data_key.c_str());
-//        while(this->m_running)
+//        while(this->is_run_)
 //        {
 //            const char* data = this->m_redis_queue.customer(this->m_redis_key.m_data_key);
 //             if(data == NULL)
@@ -77,7 +77,7 @@
 //template<class DECODE>
 //void cdecode_temp<DECODE>::deinit()
 //{
-//    this->m_running = false;
+//    this->is_run_ = false;
 //    this->m_redis_queue.destroy();
 //    if(this->m_ctrl_thread != NULL)
 //    {

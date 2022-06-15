@@ -16,6 +16,7 @@ FLAGS := -Wall -O0 -MD -shared -fPIC -std=c++14 -U_FORTIFY_SOURCE  -fpermissive
 #FLAGS  += -g -fsanitize=address -fno-omit-frame-pointer
 
 MEDIAARCH := vpu
+#MEDIAARCH := cpu
 ifeq ($(MEDIAARCH),cpu)
 	COMPILE_FLAG= -DCPUMEDIA
 endif

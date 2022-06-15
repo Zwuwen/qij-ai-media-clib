@@ -162,7 +162,7 @@ void cbase_media::pull_flow_thread_for_decode(void* p_this, ffmpeg_pull_flow_par
     int video_index = -1;
     steady_clock::time_point start_time = steady_clock::now();
     cmylog::mylog("INFO","pull flow begin,id=%s\n",pconf->m_id.c_str());
-
+#ifdef VPUMEDIA
     /**
      * 处始化解码器 暂时不兼容cpu decoder
      */
@@ -177,7 +177,7 @@ void cbase_media::pull_flow_thread_for_decode(void* p_this, ffmpeg_pull_flow_par
 
     cmylog::mylog("INFO","decode data type=%d\n",pconf->m_decode_data_type);
     decode->set_cache_type(pconf->m_decode_data_type);
-
+#endif
 Begin:
     cmylog::mylog("INFO","##############thread begin,id=%s###############\n",pconf->m_id.c_str());
     //net类型初始化参数
@@ -253,6 +253,23 @@ OPEN:
     #endif
     param->m_video_index = video_index;
     read_pack_cnt = -1;
+
+#ifndef VPUMEDIA
+/**
+  * 处始化解码器
+  */
+    decode->init((void*)param);
+    cmylog::mylog("INFO","decode initialization complete,url=%s\n",pconf->m_url.c_str());
+
+    if(decode->ctrl(std::to_string(video_index)) != QJ_BOX_OP_CODE_SUCESS)
+    {
+        cmylog::mylog("ERR","decode ctrl failure,url=%s\n",pconf->m_url.c_str());
+        goto End;
+    }
+
+    cmylog::mylog("INFO","decode data type=%d\n",pconf->m_decode_data_type);
+    decode->set_cache_type(pconf->m_decode_data_type);
+#endif
     while(param->m_is_running)
     {
         if (duration_cast<seconds>(steady_clock::now() - start_time).count() > atoi(pconf->m_unlink_timeout.c_str())) {
@@ -393,16 +410,13 @@ UINT32 cbase_media::get_media_by_id(const char* media_id,int media_type,uint8_t 
 
     for(auto & it : m_pull_flow_param_list)
      {
-         if(it.m_id == id)
-         {
+         if(it.m_id == id) {
              //查看线程是否启动
-            if(!it.m_is_running)
-            {
+            if(!it.m_is_running) {
                 return 0;
             } 
 //#pragma mark -新增
-             if(it.m_decode != nullptr)
-            {
+             if(it.m_decode != nullptr) {
                 if(!it.m_decode->is_run()){
                     return 0;
                 }
