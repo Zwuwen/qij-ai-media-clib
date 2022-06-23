@@ -7,12 +7,14 @@ ifeq ($(ARCH),x86)
 endif
 ifeq ($(ARCH),arm)
 #  C++ =  /home/peng/work/tmp/host/usr/bin/aarch64-linux-g++
-  C++ =  /home/dev/data/wrm/host/bin/aarch64-linux-g++
+  #C++ =  /home/dev/data/wrm/host/bin/aarch64-linux-g++
+  C++ =  /home/dev/workspace/zxf/compile-env/host/bin/aarch64-linux-g++
 endif
 
 #FLAGS= -Wall -O2 -MD -shared -std=c++11 -U_FORTIFY_SOURCE -g
 #FLAGS := -Wall -O2 -MD -shared -fPIC -std=c++11 -U_FORTIFY_SOURCE  -fpermissive
 FLAGS := -Wall -O0 -MD -shared -fPIC -std=c++14 -U_FORTIFY_SOURCE  -fpermissive
+#FLAGS := -Wall -O0 -MD -shared -fPIC -std=c++11
 #FLAGS  += -g -fsanitize=address -fno-omit-frame-pointer
 
 MEDIAARCH := vpu
@@ -33,7 +35,7 @@ SYS_INC := -I /usr/local/aarch64/jpeg-8d/include
 SYS_INC += -I /usr/local/aarch64/sysroot/usr/include
 SYS_INC += -I /usr/local/aarch64/jsoncpp/include
 #SYS_INC += -I /usr/local/aarch64/hiredis/include
-
+#SYS_INC += -I /home/dev/data/wrm/host/aarch64-buildroot-linux-gnu/sysroot/usr/include
 endif
 ifeq ($(ARCH),x86)
 SYS_INC := -I /usr/local/ffmpeg/include -I/usr/include/sys -I/usr/include
@@ -48,6 +50,8 @@ endif
 USER_INC := -I ./common
 USER_INC += -I ./common/mydef
 USER_INC += -I ./common/log
+USER_INC += -I ./common/logs/
+USER_INC += -I ./common/logs/spdlog/
 USER_INC += -I ./common/utils
 USER_INC += -I ./common/utils/sync_task
 USER_INC += -I ./common/utils/queue
@@ -65,6 +69,7 @@ SRC += $(wildcard ./init/*.cc)
 SRC += $(wildcard ./common/*.cc)
 SRC += $(wildcard ./common/mydef/*.cc)
 SRC += $(wildcard ./common/log/*.cc)
+SRC += $(wildcard ./common/logs/*.cpp)
 SRC += $(wildcard ./common/utils/*.cc)
 SRC += $(wildcard ./common/utils/cache/*.cc)
 SRC += $(wildcard ./common/utils/sync_task/*.cc)
@@ -84,6 +89,8 @@ LIB += -L/usr/local/aarch64/jpeg-8d/lib -ljpeg
 LIB += -L/usr/local/aarch64/jsoncpp/lib -ljsoncpp
 #LIB += -L/usr/local/aarch64/hiredis/lib -lhiredis
 #LIB += -L/home/peng/work/tmp/host/usr/lib
+SYS_ROOT_PATH = /home/dev/workspace/zxf/compile-env/host/aarch64-buildroot-linux-gnu/sysroot/
+
 endif
 ifeq ($(ARCH),x86)
 LIB = -L/usr/lib -L/usr/local/lib -lpthread -lm 
@@ -100,9 +107,10 @@ TARGET_BIN=libqjmedia.so
 
 #$(C++)  $(FLAGS) $(COMPILE_FLAG) -c  $(SRC) $(SYS_INC) $(USER_INC) $(LIB) 
 #$(C++) -o output/$(TARGET_BIN)  $(notdir $(TARGET_O)) $(LIB)
+#$(C++)  $(FLAGS) $(COMPILE_FLAG) --sysroot=$(SYS_ROOT_PATH)  -o $(TARGET_BIN)  $(SRC) $(SYS_INC) $(USER_INC) $(LIB)
 all:
 	@echo "$(shell date "+%Y-%m-%d %H:%M:%S")-INFO:compile begin"
-	$(C++)  $(FLAGS) $(COMPILE_FLAG) -o $(TARGET_BIN)  $(SRC) $(SYS_INC) $(USER_INC) $(LIB) 
+	$(C++)  $(FLAGS) $(COMPILE_FLAG) --sysroot=$(SYS_ROOT_PATH)  -o $(TARGET_BIN)  $(SRC) $(SYS_INC) $(USER_INC) $(LIB)
 	@echo "$(shell date "+%Y-%m-%d %H:%M:%S")-INFO:end"
 	@./cp.sh
 

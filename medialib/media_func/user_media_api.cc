@@ -1,3 +1,4 @@
+#include "Loggers.h"
 #include "common.h"
 #include "init_data.h"
 #include "user_media_api.h"
@@ -13,6 +14,8 @@ MEDIA_HANDLE init_media_qjapi(char *media_conf) {
     if (media_conf == nullptr) {
         return nullptr;
     }
+    Loggers::init_multi_sink();
+    SPDLOG_TRACE("init_media_qjapi({})",media_conf);
     printf("conf=%s\n", media_conf);
     cbase_media *base_media = nullptr;
     Json::Reader reader;

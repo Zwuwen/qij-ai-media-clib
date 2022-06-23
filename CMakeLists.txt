@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD 14)
 include_directories(medialib/app_func)
 include_directories(medialib/common)
 include_directories(medialib/common/log)
+include_directories(medialib/common/logs)
 include_directories(medialib/common/mydef)
 include_directories(medialib/common/utils/cache)
 include_directories(medialib/common/utils/queue/redis)
@@ -21,6 +22,8 @@ add_executable(mpp_ffmpeg
         medialib/app_func/app_api.cc
         medialib/app_func/app_api.h
         medialib/common/log/mylog.cc
+        medialib/common/logs/Loggers.h
+        medialib/common/logs/Loggers.cpp
         medialib/common/log/mylog.h
         medialib/common/mydef/mydef.cc
         medialib/common/mydef/mydef.h
