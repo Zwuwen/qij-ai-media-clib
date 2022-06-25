@@ -1,6 +1,6 @@
 #####arch gcc#####
-#ARCH = x86
-ARCH = arm
+ARCH = x86
+#ARCH = arm
 
 ifeq ($(ARCH),x86)
   C++ = g++
@@ -11,7 +11,8 @@ ifeq ($(ARCH),arm)
   C++ =  /home/dev/workspace/zxf/compile-env/host/bin/aarch64-linux-g++
 endif
 
-#FLAGS= -Wall -O2 -MD -shared -std=c++11 -U_FORTIFY_SOURCE -g
+#FLAGS= -Wall -O2 -MD -shared -std=c++11 -U_FORTIFY_SOURCE -
+
 #FLAGS := -Wall -O2 -MD -shared -fPIC -std=c++11 -U_FORTIFY_SOURCE  -fpermissive
 FLAGS := -Wall -O0 -MD -shared -fPIC -std=c++14 -U_FORTIFY_SOURCE  -fpermissive
 #FLAGS := -Wall -O0 -MD -shared -fPIC -std=c++11

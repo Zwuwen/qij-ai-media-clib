@@ -1,6 +1,11 @@
+#include "Loggers.h"
 #include "common.h"
 #include "base_media.h"
 #include "algorithm"
+
+#define ERROR_BUF \
+    char errbuf[1024]; \
+    av_strerror(ret, errbuf, sizeof (errbuf));
 
 cbase_media::cbase_media()
 {
@@ -183,6 +188,7 @@ Begin:
     //net类型初始化参数
     if(pconf->m_type ==NET_FLOW_TYPE )
     {
+        SPDLOG_INFO("opts:{},{},{}",pconf->m_net_type.c_str(),pconf->m_buffer_size.c_str(),pconf->m_max_delay.c_str());
         av_dict_set(&param->m_opts,"rtsp_transport",pconf->m_net_type.c_str(),0);
         av_dict_set(&param->m_opts,"stimeout","5000000",0);
         av_dict_set(&param->m_opts,"buffer_size",pconf->m_buffer_size.c_str(),0); 
@@ -199,6 +205,9 @@ OPEN:
         ret_value = avformat_open_input(&param->m_input_ctx, (char*)pconf->m_url.c_str(), NULL, &param->m_opts);
         if(ret_value < 0)
         {
+            char errbuf[1024];
+            av_strerror(ret_value, errbuf, sizeof (errbuf));
+            SPDLOG_ERROR("open ret_value::{},{}",ret_value,errbuf);
             cmylog::mylog("ERR","could not open meidia source,url=%s\n",pconf->m_url.c_str());
             std::cout<<"could not open meidia source"<<std::endl;
             /* retry always  */
@@ -280,10 +289,13 @@ OPEN:
             goto Begin;
         }
         //read h264
-        read_pack_cnt = av_read_frame(param->m_input_ctx, &param->m_pkt) < 0;
+        read_pack_cnt = av_read_frame(param->m_input_ctx, &param->m_pkt);
         if (read_pack_cnt)
         {
-            //cmylog::mylog("WAR","av_read_frame() read packet count < 0,url=%s\n",pconf->m_url.c_str());
+            char errbuf[1024];
+            av_strerror(ret_value, errbuf, sizeof (errbuf));
+            SPDLOG_ERROR("av_read_frame::{},{}",read_pack_cnt,errbuf);
+//            cmylog::mylog("WAR","av_read_frame() read packet count < 0,url=%s\n",pconf->m_url.c_str());
             continue;
         }
         else
@@ -293,12 +305,11 @@ OPEN:
         
          if(param->m_pkt.stream_index == video_index)
          {
-            //printf("type=%d\n",pconf->m_decode_data_type) ;
-            decode->data() ;
-         }    
-        av_packet_unref(&param->m_pkt);
-	    av_init_packet(&param->m_pkt);
-         //cmylog::mylog("INFO","thread id = %d,id=%s\n",std::this_thread::get_id(),pconf->m_id.c_str());
+             SPDLOG_INFO("av_read_frame success");
+             decode->data() ;
+         }
+//        av_packet_unref(&param->m_pkt);
+//	    av_init_packet(&param->m_pkt);
     }
 End:
     /*回收资源*/

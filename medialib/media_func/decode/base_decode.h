@@ -19,7 +19,7 @@ public:
     void set_cache_type(UINT8 type);
 public:
     cshared_sample_cache* m_shared_cache;
-    decode_data_st_t* m_decode_info;
+    decode_data_st_t* m_decode_info= nullptr;
     UINT8 m_shared_cache_type;
 //	#pragma mark -新增
     virtual bool is_run()=0;

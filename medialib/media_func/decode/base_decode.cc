@@ -1,5 +1,4 @@
 #include "common.h"
-
 #include "base_decode.h"
 
 cbase_decode::cbase_decode()
