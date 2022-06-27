@@ -22,9 +22,9 @@ public:
 public:
     ffmpeg_pull_flow_param_t* m_param{};
 private:
-    std::list<AVPacket> pktList;
+    std::list<AVPacket> pktList{};
     std::mutex packet_list_lock_{};
-    std::thread* m_decode_func_thread;
+    std::thread* m_decode_func_thread{};
     bool is_run_= false;
 };
 

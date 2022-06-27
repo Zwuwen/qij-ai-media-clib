@@ -150,7 +150,7 @@ void cbase_media::pull_flow_thread(void* pthis,ffmpeg_pull_flow_param_t& pull_fl
     #else
     pull_flow_param.m_decode = new ccpu_decode();
     #endif
-    assert(pull_flow_param.m_decode !=NULL);
+    assert(pull_flow_param.m_decode !=nullptr);
 
     pull_flow_param.m_is_running = true;
     cbase_media::pull_flow_thread_for_decode(pthis,pull_flow_param, conf,pull_flow_param.m_decode);
@@ -290,22 +290,16 @@ OPEN:
         }
         //read h264
         read_pack_cnt = av_read_frame(param->m_input_ctx, &param->m_pkt);
-        if (read_pack_cnt)
-        {
+        if (read_pack_cnt) {
             char errbuf[1024];
             av_strerror(ret_value, errbuf, sizeof (errbuf));
             SPDLOG_ERROR("av_read_frame::{},{}",read_pack_cnt,errbuf);
-//            cmylog::mylog("WAR","av_read_frame() read packet count < 0,url=%s\n",pconf->m_url.c_str());
             continue;
-        }
-        else
-        {
+        } else {
 	        start_time = steady_clock::now();
         }
-        
-         if(param->m_pkt.stream_index == video_index)
-         {
-             SPDLOG_INFO("av_read_frame success");
+         if(param->m_pkt.stream_index == video_index) {
+//             SPDLOG_INFO("av_read_frame success");
              decode->data() ;
          }
 //        av_packet_unref(&param->m_pkt);

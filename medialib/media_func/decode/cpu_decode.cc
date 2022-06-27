@@ -1,9 +1,7 @@
 #include "Loggers.h"
 #include "cpu_decode.h"
 
-ccpu_decode::ccpu_decode(){
-
-}
+ccpu_decode::ccpu_decode()= default;
 
 ccpu_decode::~ccpu_decode(){
     for(auto & pkt : pktList){
@@ -33,8 +31,11 @@ void ccpu_decode::deinit() {
 
 UINT32 ccpu_decode::data() {
     std::lock_guard<std::mutex> lk(packet_list_lock_);
-    if(pktList.size()>5) return QJ_BOX_OP_CODE_SUCESS;
-    SPDLOG_INFO("put data to list");
+    if(pktList.size()>5){
+        av_packet_unref(&m_param->m_pkt);
+        return QJ_BOX_OP_CODE_SUCESS;
+    }
+//    SPDLOG_INFO("put data to list");
     pktList.push_back(m_param->m_pkt);
     return QJ_BOX_OP_CODE_SUCESS;
 }
@@ -92,7 +93,7 @@ void ccpu_decode::decode_process() {
         {
             std::unique_lock<std::mutex> lk(packet_list_lock_);
             if (pktList.empty()){
-                SPDLOG_WARN("list is empty");
+//                SPDLOG_WARN("list is empty");
                 lk.unlock();
                 std::this_thread::sleep_for(20ms);
                 continue;
@@ -103,14 +104,15 @@ void ccpu_decode::decode_process() {
         }
         if (pkt.flags != 1) {
 //            std::this_thread::sleep_for(200ms);
-            SPDLOG_WARN("not a I frame");
+//            SPDLOG_WARN("not a I frame");
+            av_packet_unref(&pkt);
             continue;
         }
-        SPDLOG_INFO("start to d");
+        SPDLOG_INFO("start to dec");
         if (m_param->m_avcodectxt == NULL) {
             cmylog::mylog("ERR", "pktm_avcodectxt is null ,id=%s\n", m_param->m_id.c_str());
+            av_packet_unref(&pkt);
             continue;
-//            return QJ_BOX_OP_CODE_DATAINVALID;
         }
         //解码过程
         int send_pkt = avcodec_send_packet(m_param->m_avcodectxt, &pkt);

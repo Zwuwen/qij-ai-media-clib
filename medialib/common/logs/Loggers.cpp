@@ -4,7 +4,7 @@
 
 #include "Loggers.h"
 
-string Loggers:: PATH("/data/logs/AI/clib-media/");
+string Loggers:: PATH("/disk/logs/AI/clib-media/");
 bool Loggers::init_flag_=false;
 mutex Loggers::log_lock_;
 
@@ -14,7 +14,7 @@ void Loggers::init_multi_sink()
     if(init_flag_) return;
     init_flag_ = true;
     if(!create_directory()) {
-        PATH = string("/data/clib-media.");
+        PATH = string("/disk/clib-media.");
     }
     auto console_sink = make_shared< stdout_color_sink_mt>();
     console_sink->set_level( spdlog::level::trace);

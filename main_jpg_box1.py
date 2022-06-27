@@ -34,8 +34,11 @@ class DecodeData(Structure):
         return result
 
 
+decode_data = DecodeData()
+
+
 class MediaFunc:
-    media_lib = cdll.LoadLibrary("/usr/lib/libmedia.so")
+    media_lib = cdll.LoadLibrary("/data/usr/lib/libmedia.so")
     handle = None
     count = 0
     dts_map = dict()
@@ -84,7 +87,6 @@ class MediaFunc:
     def get_media_by_id(media_id, buf_type=2):
         MediaFunc.media_lib.get_media_by_id.restype = c_int
         MediaFunc.media_lib.get_media_by_id.argtypes = [c_void_p, c_char_p, c_int, POINTER(DecodeData)]
-        decode_data = DecodeData()
         # buf_type = 2
         ret = MediaFunc.media_lib.get_media_by_id(MediaFunc.handle, media_id, buf_type, byref(decode_data))
         # print(decode_data)
@@ -92,7 +94,7 @@ class MediaFunc:
         if ret < 0:
             return
 
-        # dts = decode_data.dts
+        dts = decode_data.dts
         width = decode_data.width
         height = decode_data.height
         yuv_buf = decode_data.yuv_buf
@@ -101,7 +103,7 @@ class MediaFunc:
         jpg_size = decode_data.jpg_len
         if media_id in MediaFunc.dts_map:
             if MediaFunc.dts_map[media_id] == decode_data.dts:
-                print(f'old frame')
+                # print(f'old frame')
                 return
         MediaFunc.dts_map[media_id] = decode_data.dts
         if yuv_size:
@@ -118,6 +120,7 @@ class MediaFunc:
             #     MediaFunc.count = MediaFunc.count + 1
 
         if yuv_size or jpg_size:
+            print(f'dts:{dts}')
             return True
 
 
@@ -146,7 +149,7 @@ if __name__ == '__main__':
     conf_dic2["media"].append(media1)
     # conf_dic2["media"].append(media2)
 
-    media3 = {"id": "media3", "url": "rtsp://admin:Admin123@192.168.55.13/Streaming/Channels/101", "decode": "CPU",
+    media3 = {"id": "media3", "url": "rtsp://admin:test0883@192.168.54.53:554/Streaming/Channels/101", "decode": "CPU",
               "decode_data": 2}
     # media4 = {"id": "media4", "url": "rtsp://admin:test0883@192.168.54.53:554/Streaming/Channels/101", "decode": "CPU",
     #           "decode_data": 3}
@@ -168,39 +171,41 @@ if __name__ == '__main__':
     first = True
     media3_is_use = True
     while True:
-        # MediaFunc.get_media_by_id(b"media1")
+        """"""
+        MediaFunc.get_media_by_id(b"media1")
         # time.sleep(1)
         # print(f"get midia")
         # MediaFunc.get_media_by_id(b"media1", 2)
-        time.sleep(1)
+        # time.sleep(1)
 
-        # if media3_is_use:
-        #     # print(f"add midia:{conf_dic3}")
-        #     media_configure_str = json.dumps(conf_dic3)
-        #     result = MediaFunc.add_media_by_handle(media_configure_str.encode())
-        #     # print(f"add midia result:{result}")
+        if media3_is_use:
+            # print(f"add midia:{conf_dic3}")
+            media_configure_str = json.dumps(conf_dic3)
+            result = MediaFunc.add_media_by_handle(media_configure_str.encode())
+            # print(f"add midia result:{result}")
+
+            if result == 0:
+                result = MediaFunc.start_sample_media(b"media3")
+                # time.sleep(5)
+                print(f'start media3:{result}')
+
+            result = MediaFunc.get_media_by_id(b"media3", 2)
+            if result:
+                print(f"get midia3 success ")
+                count += 1
         #
-        #     if result == 0:
-        #         result = MediaFunc.start_sample_media(b"media3")
-        #         # time.sleep(5)
-        #         print(f'start media3:{result}')
+        if count == 1000:
+            result = MediaFunc.remove_media_by_handle(b"media3")
+            print(f"remove media3 result:{result}")
+            if result == 0: print(f"remove media3{'😂' * 8}")
+            media3_is_use = False
+            count_media3_add += 1
         #
-        #     # print(f"get midia3")
-        #     result = MediaFunc.get_media_by_id(b"media3", 2)
-        #     if result: count += 1
-        #
-        # if count == 1000:
-        #     result = MediaFunc.remove_media_by_handle(b"media3")
-        #     # print(f"remove media3 result:{result}")
-        #     if result == 0: print(f"remove media3{'😂' * 8}")
-        #     media3_is_use = False
-        #     count_media3_add += 1
-        #
-        # if count_media3_add == 1000:
-        #     print(f'reuse media3{"🚕" * 8}')
-        #     count_media3_add = 0
-        #     count = 0
-        #     media3_is_use = True
+        if count_media3_add == 1000:
+            print(f'reuse media3{"🚕" * 8}')
+            count_media3_add = 0
+            count = 0
+            media3_is_use = True
         # time.sleep(1)
         # MediaFunc.get_media_by_id(b"media2", 2)
         # time.sleep(1)
