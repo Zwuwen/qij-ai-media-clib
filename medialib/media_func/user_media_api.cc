@@ -44,10 +44,13 @@ MEDIA_HANDLE init_media_qjapi(char *media_conf) {
                 conf.m_decode_data_type = media_obj[i]["decode_data"].asInt();
                 media_conf_list.push_back(conf);
             }
-            cmylog::mylog("INFO", "load conf complete\n");
+            cmylog::mylog("INFO", "load conf complete000\n");
             //媒体资源初始化
+            printf("0\n");
             base_media = new cbase_media();
+            printf("1\n");
             UINT32 ret = base_media->init_resource(media_conf_list);
+            printf("2\n");
             if (ret != QJ_BOX_OP_CODE_SUCESS) {
                 printf("init resource failure\n");
                 base_media->destory_resource();
@@ -113,7 +116,7 @@ int stop_all_media(MEDIA_HANDLE handle) {
     auto *base_media = (cbase_media *) handle;
     if (base_media == nullptr) {
         cmylog::mylog("INFO", "input handle is null \n");
-        return QJ_BOX_OP_CODE_INPUTPARAMERR;
+        return QJ_BOX_OP_CODE_INPU\TPARAMERR;
     }
     base_media->stop_all_pull_media_task();
     return QJ_BOX_OP_CODE_SUCESS;

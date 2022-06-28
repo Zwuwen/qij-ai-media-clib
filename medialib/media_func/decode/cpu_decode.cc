@@ -1,7 +1,9 @@
 #include "Loggers.h"
 #include "cpu_decode.h"
 
-ccpu_decode::ccpu_decode()= default;
+ccpu_decode::ccpu_decode(){
+//    jpg= make_shared<cjpg>();
+}
 
 ccpu_decode::~ccpu_decode(){
     for(auto & pkt : pktList){
@@ -108,7 +110,7 @@ void ccpu_decode::decode_process() {
             av_packet_unref(&pkt);
             continue;
         }
-        SPDLOG_INFO("start to dec");
+        SPDLOG_INFO("start to de===");
         if (m_param->m_avcodectxt == NULL) {
             cmylog::mylog("ERR", "pktm_avcodectxt is null ,id=%s\n", m_param->m_id.c_str());
             av_packet_unref(&pkt);

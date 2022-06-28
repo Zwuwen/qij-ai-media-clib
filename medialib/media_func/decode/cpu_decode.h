@@ -26,6 +26,7 @@ private:
     std::mutex packet_list_lock_{};
     std::thread* m_decode_func_thread{};
     bool is_run_= false;
+//    shared_ptr<cjpg> jpg= nullptr;
 };
 
 

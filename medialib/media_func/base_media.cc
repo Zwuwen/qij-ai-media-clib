@@ -18,12 +18,14 @@ cbase_media::~cbase_media()
 
 UINT32 cbase_media::init_resource(vector<media_conf_t>& media_conf_list)
 {
+    printf("1.0\n");
     if(media_conf_list.empty())
     {
         cmylog::mylog("WAR","media configure list size <=0\n");
         return QJ_BOX_OP_CODE_INPUTPARAMERR;
     }
     //资源列表初始化
+    printf("1.1\n");
     for(auto & it : media_conf_list)
     {
         //流配置初始化
@@ -33,7 +35,9 @@ UINT32 cbase_media::init_resource(vector<media_conf_t>& media_conf_list)
         ffmpeg_pull_obj.m_id = it.m_id;
         this->m_pull_flow_param_list.push_back(ffmpeg_pull_obj);
     }
+    printf("1.2\n");
     avformat_network_init();
+    printf("1.3\n");
     cmylog::mylog("INFO","base media configure complete\n");
     return QJ_BOX_OP_CODE_SUCESS;
 }

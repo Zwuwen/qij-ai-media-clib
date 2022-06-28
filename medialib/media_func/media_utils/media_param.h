@@ -105,7 +105,7 @@ typedef struct ffmpeg_pull_flow_param
     #ifdef VPUMEDIA
     rk1808_flow_param_t m_rk1808_param;
     #endif
-    cjpg m_jpg_module;
+//    cjpg m_jpg_module;
     cbase_decode* m_decode{};
 }ffmpeg_pull_flow_param_t,*pffmpeg_pull_flow_param_t;
 

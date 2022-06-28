@@ -1,0 +1,73 @@
+FLAGS := -Wall -O0 -MD -shared -fPIC -std=c++14 -U_FORTIFY_SOURCE -fpermissive
+FLAGS += -I$(STAGING_DIR)/usr/include/ -I/opewrt/new/openwrt-19.07.8/build_dir/target-arm_cortex-a7+neon-vfpv4_musl_eabi/jsoncpp-1.8.4/include
+
+
+MEDIAARCH := cpu
+ifeq ($(MEDIAARCH),cpu)
+	COMPILE_FLAG= -DCPUMEDIA
+endif
+ifeq ($(MEDIAARCH),vpu)
+	COMPILE_FLAG= -DVPUMEDIA
+endif
+
+
+USER_INC := -I ./common
+USER_INC += -I ./common/mydef
+USER_INC += -I ./common/log
+USER_INC += -I ./common/logs/
+USER_INC += -I ./common/logs/spdlog/
+USER_INC += -I ./common/utils
+USER_INC += -I ./common/utils/sync_task
+USER_INC += -I ./common/utils/queue
+USER_INC += -I ./common/utils/cache
+USER_INC += -I ./common/utils/queue/redis
+USER_INC += -I ./media_func
+USER_INC += -I ./media_func/decode
+USER_INC += -I ./media_func/media_utils
+USER_INC += -I ./media_func/media_utils/jpg
+USER_INC += -I ./media_func/media_utils/yuv
+USER_INC += -I ./init
+
+
+SRC := $(wildcard ./*.cc)
+SRC += $(wildcard ./init/*.cc)
+SRC += $(wildcard ./common/*.cc)
+SRC += $(wildcard ./common/mydef/*.cc)
+SRC += $(wildcard ./common/log/*.cc)
+SRC += $(wildcard ./common/logs/*.cpp)
+SRC += $(wildcard ./common/utils/*.cc)
+SRC += $(wildcard ./common/utils/cache/*.cc)
+SRC += $(wildcard ./common/utils/sync_task/*.cc)
+SRC += $(wildcard ./common/utils/queue/*.cc)
+SRC += $(wildcard ./common/utils/queue/redis/*.cc)
+SRC += $(wildcard ./media_func/*.cc)
+SRC += $(wildcard ./media_func/decode/*.cc)
+SRC += $(wildcard ./media_func/media_utils/*.cc)
+SRC += $(wildcard ./media_func/media_utils/jpg/*.cc)
+SRC += $(wildcard ./media_func/media_utils/yuv/*.cc)
+
+
+TARGET_O := $(foreach src,$(SRC), $(patsubst %cc,%o,$(src)) )
+
+
+
+LIB =  -lpthread -lm -ljsoncpp
+LIB +=  -lavcodec -lswscale -lavutil -lavdevice -lavfilter -lavformat
+LIB +=  -ljpeg
+
+TARGET_SO=libmedia.so
+
+
+all:
+	@rm output -rf
+	@rm jpg/* -rf
+	@echo "$(shell date "+%Y-%m-%d %H:%M:%S")-INFO:compile begin"
+	@[ -d "./output" ] || mkdir output
+	$(CXX)   $(FLAGS) $(COMPILE_FLAG) $(SRC) $(SYS_INC) $(USER_INC) -o $(TARGET_SO) $(LIB)
+	@echo "$(shell date "+%Y-%m-%d %H:%M:%S")-INFO:end"
+
+.PHONY:clean
+clean:
+	@rm output -rf
+	@rm jpg/* -rf
+	@echo "clean complete"
