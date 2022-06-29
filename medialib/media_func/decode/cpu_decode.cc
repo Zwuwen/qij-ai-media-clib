@@ -2,13 +2,10 @@
 #include "cpu_decode.h"
 
 ccpu_decode::ccpu_decode(){
-//    jpg= make_shared<cjpg>();
+    jpg= make_shared<cjpg>();
 }
 
 ccpu_decode::~ccpu_decode(){
-    for(auto & pkt : pktList){
-        av_packet_unref(&pkt);
-    }
 }
 
 void ccpu_decode::init(void *param) {
@@ -17,6 +14,9 @@ void ccpu_decode::init(void *param) {
 }
 
 void ccpu_decode::deinit() {
+    for(auto & pkt : pktList){
+        av_packet_unref(&pkt);
+    }
     if (m_decode_func_thread != nullptr) {
         if (is_run_) {
             is_run_ = false;
@@ -37,7 +37,6 @@ UINT32 ccpu_decode::data() {
         av_packet_unref(&m_param->m_pkt);
         return QJ_BOX_OP_CODE_SUCESS;
     }
-//    SPDLOG_INFO("put data to list");
     pktList.push_back(m_param->m_pkt);
     return QJ_BOX_OP_CODE_SUCESS;
 }
@@ -75,11 +74,11 @@ UINT32 ccpu_decode::ctrl(std::string data) {
         return QJ_BOX_OP_CODE_UNKOWNERR;
     }
     // 由于解码出来的帧格式不一定是YUV420P的,在转jpg之前需要进行格式转换
-    m_param->m_img_conver_ctx = sws_getContext(m_param->m_avcodectxt->width, m_param->m_avcodectxt->height,
                                                m_param->m_avcodectxt->pix_fmt,
                                                m_param->m_avcodectxt->width, m_param->m_avcodectxt->height,
                                                AV_PIX_FMT_YUV420P,
                                                SWS_BICUBIC, NULL, NULL, NULL);
+    m_param->m_img_conver_ctx = sws_getContext(m_param->m_avcodectxt->width, m_param->m_avcodectxt->height,
     is_run_ = true;
     m_decode_func_thread = new std::thread([this](){ decode_process(); });
     return QJ_BOX_OP_CODE_SUCESS;
@@ -95,7 +94,6 @@ void ccpu_decode::decode_process() {
         {
             std::unique_lock<std::mutex> lk(packet_list_lock_);
             if (pktList.empty()){
-//                SPDLOG_WARN("list is empty");
                 lk.unlock();
                 std::this_thread::sleep_for(20ms);
                 continue;
@@ -135,9 +133,13 @@ void ccpu_decode::decode_process() {
                                  m_param->m_frame->linesize,
                                  0, m_param->m_avcodectxt->height,
                                  m_param->m_sw_frame->data, m_param->m_sw_frame->linesize);
-        if (retvalue == 0) {};
+        if (retvalue == 0) {
+            SPDLOG_WARN("sws_scale return 0");
+            continue;
+        };
         decode_data_st_t *decode_info = m_decode_info;
         if (m_param->m_avcodectxt->width <= 0) {
+            SPDLOG_WARN("m_avcodectxt->width <= 0");
             continue;
         }
         decode_info->m_width = m_param->m_avcodectxt->width;
@@ -148,7 +150,7 @@ void ccpu_decode::decode_process() {
         }
 
         if (m_shared_cache_type & DECODE_DATA_JPG) {
-            auto jpg= make_shared<cjpg>();
+//            auto jpg= make_shared<cjpg>();
             jpg->init_conv_param(decode_info->m_width, decode_info->m_height);
             if (jpg->yuv2jpg(m_param->m_sw_frame->data[0]) == false) {
                 continue;

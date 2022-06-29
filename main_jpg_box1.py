@@ -159,40 +159,41 @@ if __name__ == '__main__':
     media3_is_use = True
     while True:
         """"""
-        # MediaFunc.get_media_by_id(b"media1")
-        # # time.sleep(1)
+        MediaFunc.get_media_by_id(b"media1")
+        # time.sleep(1)
         # # print(f"get midia")
         # # MediaFunc.get_media_by_id(b"media1", 2)
         # # time.sleep(1)
         #
-        # if media3_is_use:
-        #     # print(f"add midia:{conf_dic3}")
-        #     media_configure_str = json.dumps(conf_dic3)
-        #     result = MediaFunc.add_media_by_handle(media_configure_str.encode())
-        #     # print(f"add midia result:{result}")
+        if media3_is_use:
+            # print(f"add midia:{conf_dic3}")
+            media_configure_str = json.dumps(conf_dic3)
+            result = MediaFunc.add_media_by_handle(media_configure_str.encode())
+            # print(f"add midia result:{result}")
+
+            if result == 0:
+                result = MediaFunc.start_sample_media(b"media3")
+                # time.sleep(5)
+                print(f'start media3:{result}')
+
+            result = MediaFunc.get_media_by_id(b"media3", 2)
+            if result:
+                print(f"get midia3 success:{count} ")
+                count += 1
         #
-        #     if result == 0:
-        #         result = MediaFunc.start_sample_media(b"media3")
-        #         # time.sleep(5)
-        #         print(f'start media3:{result}')
+        if count == 10:
+            print(f"start remove........")
+            result = MediaFunc.remove_media_by_handle(b"media3")
+            print(f"remove media3 result:{result}")
+            if result == 0: print(f"remove media3{'😂' * 8}")
+            media3_is_use = False
+            count_media3_add += 1
         #
-        #     result = MediaFunc.get_media_by_id(b"media3", 2)
-        #     if result:
-        #         print(f"get midia3 success ")
-        #         count += 1
-        # #
-        # if count == 1000:
-        #     result = MediaFunc.remove_media_by_handle(b"media3")
-        #     print(f"remove media3 result:{result}")
-        #     if result == 0: print(f"remove media3{'😂' * 8}")
-        #     media3_is_use = False
-        #     count_media3_add += 1
-        # #
-        # if count_media3_add == 1000:
-        #     print(f'reuse media3{"🚕" * 8}')
-        #     count_media3_add = 0
-        #     count = 0
-        #     media3_is_use = True
+        if count_media3_add == 10:
+            print(f'reuse media3{"🚕" * 8}')
+            count_media3_add = 0
+            count = 0
+            media3_is_use = True
         # time.sleep(1)
         # MediaFunc.get_media_by_id(b"media2", 2)
         # time.sleep(1)

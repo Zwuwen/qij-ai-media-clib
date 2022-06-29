@@ -18,14 +18,12 @@ cbase_media::~cbase_media()
 
 UINT32 cbase_media::init_resource(vector<media_conf_t>& media_conf_list)
 {
-    printf("1.0\n");
     if(media_conf_list.empty())
     {
         cmylog::mylog("WAR","media configure list size <=0\n");
         return QJ_BOX_OP_CODE_INPUTPARAMERR;
     }
     //资源列表初始化
-    printf("1.1\n");
     for(auto & it : media_conf_list)
     {
         //流配置初始化
@@ -35,9 +33,7 @@ UINT32 cbase_media::init_resource(vector<media_conf_t>& media_conf_list)
         ffmpeg_pull_obj.m_id = it.m_id;
         this->m_pull_flow_param_list.push_back(ffmpeg_pull_obj);
     }
-    printf("1.2\n");
     avformat_network_init();
-    printf("1.3\n");
     cmylog::mylog("INFO","base media configure complete\n");
     return QJ_BOX_OP_CODE_SUCESS;
 }
@@ -238,7 +234,6 @@ OPEN:
     {
         /*new version use this*/
         if(param->m_input_ctx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO)
-//        if(param->m_input_ctx->streams[i]->codec->codec_type == AVMEDIA_TYPE_VIDEO)
         {
             video_index = i;
             break;
@@ -283,11 +278,14 @@ OPEN:
     cmylog::mylog("INFO","decode data type=%d\n",pconf->m_decode_data_type);
     decode->set_cache_type(pconf->m_decode_data_type);
 #endif
-    while(param->m_is_running)
-    {
+    while(param->m_is_running) {
         if (duration_cast<seconds>(steady_clock::now() - start_time).count() > atoi(pconf->m_unlink_timeout.c_str())) {
-            cmylog::mylog("WAR", "av_read_frame() timeout,url=%s\n", pconf->m_url.c_str());
+            cmylog::mylog("WAR", "av_read_frame() timeoutt,url=%s\n", pconf->m_url.c_str());
 //#pragma mark - 断网时没有释放vpu相关资源 begin 会重新init
+
+#ifndef VPUMEDIA
+            decode->deinit();
+#endif
             in_this->clean_pull_resource(pconf->m_id);
 	        start_time = steady_clock::now();
             goto Begin;
@@ -296,20 +294,28 @@ OPEN:
         read_pack_cnt = av_read_frame(param->m_input_ctx, &param->m_pkt);
         if (read_pack_cnt) {
             char errbuf[1024];
-            av_strerror(ret_value, errbuf, sizeof (errbuf));
+            av_strerror(read_pack_cnt, errbuf, sizeof (errbuf));
             SPDLOG_ERROR("av_read_frame::{},{}",read_pack_cnt,errbuf);
+            if (AVERROR_EOF== read_pack_cnt){
+                std::this_thread::sleep_for(3000ms);
+            }
             continue;
         } else {
 	        start_time = steady_clock::now();
         }
          if(param->m_pkt.stream_index == video_index) {
-//             SPDLOG_INFO("av_read_frame success");
              decode->data() ;
+#ifdef VPUMEDIA
+             av_packet_unref(&param->m_pkt);
+#endif
+         } else{
+             av_packet_unref(&param->m_pkt);
          }
-//        av_packet_unref(&param->m_pkt);
-//	    av_init_packet(&param->m_pkt);
     }
 End:
+    if(!param->m_is_running){
+        SPDLOG_INFO("stop because of removing");
+    }
     /*回收资源*/
     //解码器资源回收
     decode->deinit();
@@ -374,7 +380,6 @@ void cbase_media::clean_all_pull_resource()
 void cbase_media::clean(ffmpeg_pull_flow_param_t& pull_param)
 {
     ffmpeg_pull_flow_param_t* param = &pull_param;
-    av_packet_unref(&param->m_pkt);
     cmylog::mylog("INFO","---release decode swscontext\n");
     if(param->m_img_conver_ctx != NULL)
     {
