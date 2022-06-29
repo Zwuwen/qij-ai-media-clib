@@ -245,20 +245,7 @@ OPEN:
         goto OPEN;
     }
     cmylog::mylog("INFO","find stream infomation success,url=%s\n",pconf->m_url.c_str());
-//    //解码器初始化消息
-//    cmylog::mylog("INFO","product video index,url=%s\n",pconf->m_url.c_str());
-
-    //拉流开始
-    #if 0   //解决缓存增加问题，av_read_frame接口导致pkt不断申请内存而不释放内存，导致虚拟内存增加
-    param->m_pkt = av_packet_alloc();
-    if(param->m_pkt == NULL)
-    {
-        cmylog::mylog("ERR","alloc packet failure,url=%s\n",pconf->m_url.c_str());
-        goto End;
-    }
-    #else
     av_init_packet(&param->m_pkt);
-    #endif
     param->m_video_index = video_index;
     read_pack_cnt = -1;
 

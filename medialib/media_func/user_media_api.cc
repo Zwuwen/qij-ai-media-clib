@@ -116,7 +116,7 @@ int stop_all_media(MEDIA_HANDLE handle) {
     auto *base_media = (cbase_media *) handle;
     if (base_media == nullptr) {
         cmylog::mylog("INFO", "input handle is null \n");
-        return QJ_BOX_OP_CODE_INPU\TPARAMERR;
+        return QJ_BOX_OP_CODE_INPUTPARAMERR;
     }
     base_media->stop_all_pull_media_task();
     return QJ_BOX_OP_CODE_SUCESS;

@@ -74,11 +74,11 @@ UINT32 ccpu_decode::ctrl(std::string data) {
         return QJ_BOX_OP_CODE_UNKOWNERR;
     }
     // 由于解码出来的帧格式不一定是YUV420P的,在转jpg之前需要进行格式转换
+    m_param->m_img_conver_ctx = sws_getContext(m_param->m_avcodectxt->width, m_param->m_avcodectxt->height,
                                                m_param->m_avcodectxt->pix_fmt,
                                                m_param->m_avcodectxt->width, m_param->m_avcodectxt->height,
                                                AV_PIX_FMT_YUV420P,
                                                SWS_BICUBIC, NULL, NULL, NULL);
-    m_param->m_img_conver_ctx = sws_getContext(m_param->m_avcodectxt->width, m_param->m_avcodectxt->height,
     is_run_ = true;
     m_decode_func_thread = new std::thread([this](){ decode_process(); });
     return QJ_BOX_OP_CODE_SUCESS;
