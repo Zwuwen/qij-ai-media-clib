@@ -293,7 +293,7 @@ OPEN:
          if(param->m_pkt.stream_index == video_index) {
              decode->data() ;
 #ifdef VPUMEDIA
-             av_packet_unref(&param->m_pkt);
+            av_packet_unref(&param->m_pkt);
 #endif
          } else{
              av_packet_unref(&param->m_pkt);
