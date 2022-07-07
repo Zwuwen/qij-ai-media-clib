@@ -1,3 +1,4 @@
+#include "Loggers.h"
 #include "vpu_decode.h"
 #include "yuv.h"
 #include "init_data.h"
@@ -85,7 +86,7 @@ UINT32 cvpu_decode::data() {
         cmylog::mylog("INFO", "decode size not enough\n");
         return QJ_BOX_OP_CODE_SUCESS;
     }
-    //I frame 
+//    I frame
     if (m_ffmpeg_param->m_pkt.flags != 1) {
         return QJ_BOX_OP_CODE_SUCESS;
     }
@@ -130,7 +131,7 @@ void cvpu_decode::decode_func(void *in_this) {
         while (times > 0) {
             ret = param->m_mpi->decode_get_frame(param->m_ctx, &param->m_frame);
             if (ret == MPP_OK) {
-                //cmylog::mylog("INFO","decode complete\n");
+                cmylog::mylog("INFO","decode complete\n");
                 break;
             }
             if (MPP_ERR_TIMEOUT == ret) {
@@ -146,10 +147,13 @@ void cvpu_decode::decode_func(void *in_this) {
         if (ret != MPP_OK) {
             ((cvpu_decode *) in_this)->m_pkt_done = false;
             msleep(1);
+            SPDLOG_ERROR("mpp decode failed");
             continue;
         }
         if (param->m_frame) {
             if (mpp_frame_get_info_change(param->m_frame)) {
+
+//                SPDLOG_INFO("info change");
                 RK_U32 width = mpp_frame_get_width(param->m_frame);
                 RK_U32 heigth = mpp_frame_get_height(param->m_frame);
                 RK_U32 hor_stride = mpp_frame_get_hor_stride(param->m_frame);
@@ -181,6 +185,7 @@ void cvpu_decode::decode_func(void *in_this) {
                     goto RESULT;
                 }
             } else {
+//                SPDLOG_INFO("mpp get buffer");
                 MppBuffer buffer = mpp_frame_get_buffer(param->m_frame);
                 RK_U32 buf_size = mpp_frame_get_buf_size(param->m_frame);
                 RK_U32 width = mpp_frame_get_width(param->m_frame);
@@ -239,6 +244,7 @@ void cvpu_decode::decode_func(void *in_this) {
             param->m_frame = NULL;
         } else {
             ((cvpu_decode *) in_this)->m_pkt_done = false;
+            SPDLOG_ERROR("mpp decode failed ,frame is null, maake sure the rtsp video stream is not h265 and reachable!!! ");
         }
     }
     if (param->m_frame) {
