@@ -294,8 +294,11 @@ UINT32 cvpu_decode::ctrl(std::string data) {
         cmylog::mylog("ERR", "mpp mpp_init failure\n");
         return QJ_BOX_OP_CODE_UNKOWNERR;
     }
+//    if (mpp_init(m_param->m_ctx, MPP_CTX_DEC, MPP_VIDEO_CodingHEVC) != MPP_OK) {
+//        cmylog::mylog("ERR", "mpp mpp_init failure\n");
+//        return QJ_BOX_OP_CODE_UNKOWNERR;
+//    }
     cmylog::mylog("INFO", "mpp mpp_init success\n");
-
     m_param->m_data.ctx = m_param->m_ctx;
     m_param->m_data.mpi = m_param->m_mpi;
     //m_param->m_data.eos            = 0;

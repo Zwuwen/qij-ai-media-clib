@@ -138,10 +138,10 @@ if __name__ == '__main__':
     conf_dic1["media"].append(media1)
     conf_dic1["media"].append(media1)
 
-    media1 = {"id": "media1", "url": "rtsp://admin:Admin123@192.168.55.13/Streaming/Channels/101", "decode": "VPU",
-              "decode_data": 2}
-    # media1 = {"id": "media1", "url": "rtsp://admin:admin123@192.168.54.57:554/cam/realmonitor?channel=1&subtype=0&unicast=true&proto=Onvif", "decode": "VPU",
+    # media1 = {"id": "media1", "url": "rtsp://admin:Admin123@192.168.55.13/Streaming/Channels/101", "decode": "VPU",
     #           "decode_data": 2}
+    media1 = {"id": "media1", "url": "rtsp://admin:admin123@192.168.54.57:554/cam/realmonitor?channel=1&subtype=0&unicast=true&proto=Onvif", "decode": "VPU",
+              "decode_data": 2}
     # media2 = {"id": "media2", "url": "rtsp://admin:test0883@192.168.54.53:554/Streaming/Channels/101", "decode": "VPU",
     #           "decode_data": 3}
     conf_dic2 = {"media": [], "log": {"isdelete": False, "isoutput": True, "logpath": "./log", "level": "INFO"}}
@@ -149,10 +149,10 @@ if __name__ == '__main__':
     # conf_dic2["media"].append(media2)
 
     #
-    media3 = {"id": "media3", "url": "rtsp://admin:Admin123@192.168.55.13/Streaming/Channels/101", "decode": "VPU",
-              "decode_data": 2}
-    # media3 = {"id": "media3", "url": "rtsp://admin:admin123@192.168.54.57:554/cam/realmonitor?channel=1&subtype=0&unicast=true&proto=Onvif", "decode": "VPU",
+    # media3 = {"id": "media3", "url": "rtsp://admin:Admin123@192.168.55.13/Streaming/Channels/101", "decode": "VPU",
     #           "decode_data": 2}
+    media3 = {"id": "media3", "url": "rtsp://admin:admin123@192.168.54.57:554/cam/realmonitor?channel=1&subtype=0&unicast=true&proto=Onvif", "decode": "VPU",
+              "decode_data": 2}
     # media4 = {"id": "media4", "url": "rtsp://admin:test0883@192.168.54.53:554/Streaming/Channels/101", "decode": "VPU",
     #           "decode_data": 3}
     conf_dic3 = {"media": [], "log": {"isdelete": False, "isoutput": True, "logpath": "./log", "level": "INFO"}}
